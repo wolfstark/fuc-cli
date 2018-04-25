@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "name": "fuc-cli",
+  "version": "1.0.0",
+  "description": "Frontend development toolchains for graceful workflow",
+  "scripts": {
+    "lint": "eslint --fix packages/**/*.js packages/**/bin/*"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "packages/**/bin/*": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wolfstark/fuc-cli.git"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "wolfstark",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wolfstark/fuc-cli/issues"
+  },
+  "homepage": "https://github.com/wolfstark/fuc-cli#readme",
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.11.0"
+  }
+}
