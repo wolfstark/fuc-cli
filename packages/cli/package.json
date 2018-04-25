@@ -20,25 +20,15 @@
     "type": "git",
     "url": "git+https://github.com/wolfstark/fuc-cli.git"
   },
-  "keywords": [
-    "fuc",
-    "cli"
-  ],
+  "keywords": ["fuc", "cli"],
   "engines": {
     "node": ">=8"
   },
-  "files": [
-    "bin"
-  ],
+  "files": ["bin"],
   "author": "wolfstark <1038999405@qq.com> (https://github.com/wolfstark)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/wolfstark/fuc-cli/issues"
   },
-  "homepage": "https://fuc-cli.github.io/",
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.11.0"
-  }
+  "homepage": "https://fuc-cli.github.io/"
 }
