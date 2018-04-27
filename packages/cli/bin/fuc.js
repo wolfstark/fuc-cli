@@ -28,7 +28,6 @@ command.version(require('../package').version).usage('<command> [options]');
 command
   .command('new <app-name>')
   .description('generate a new app')
-  .usage('<app-name> [options]')
   .option('-t, --template [template]', 'specify template of new app', 'fucapp')
   .action((name, cmd) => {
     // console.log(cmd.template);
@@ -36,10 +35,8 @@ command
   })
   .on('--help', () => {
     print('\n\n  Examples:\n');
-    print('    $ fuc new');
-    print('    $ fuc new page');
-    print('    $ fuc new app -p demo');
-    print('    $ fuc new app -p demo -t webapp\n');
+    print('    $ fuc new app');
+    print('    $ fuc new app -t fucapp\n');
   });
 // FeatureInfo();
 

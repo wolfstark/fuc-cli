@@ -1,5 +1,5 @@
 {
-  "name": "tet",
+  "name": "<%= appname %>",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,20 +9,20 @@
   },
   "dependencies": {
     "register-service-worker": "^1.0.0",
-    "vue": "^2.5.13",
+    "vue": "^2.5.16",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.0-beta.6",
-    "@vue/cli-plugin-eslint": "^3.0.0-beta.6",
-    "@vue/cli-plugin-pwa": "^3.0.0-beta.6",
-    "@vue/cli-plugin-typescript": "^3.0.0-beta.6",
-    "@vue/cli-service": "^3.0.0-beta.6",
-    "@vue/eslint-config-prettier": "^3.0.0-beta.6",
-    "@vue/eslint-config-typescript": "^3.0.0-beta.6",
+    "@vue/cli-plugin-babel": "^3.0.0-beta.7",
+    "@vue/cli-plugin-eslint": "^3.0.0-beta.7",
+    "@vue/cli-plugin-pwa": "^3.0.0-beta.7",
+    "@vue/cli-plugin-typescript": "^3.0.0-beta.7",
+    "@vue/cli-service": "^3.0.0-beta.7",
+    "@vue/eslint-config-airbnb": "^3.0.0-beta.7",
+    "@vue/eslint-config-typescript": "^3.0.0-beta.7",
     "lint-staged": "^6.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",

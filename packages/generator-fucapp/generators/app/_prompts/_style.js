@@ -1,11 +1,9 @@
-'use strict';
-
 module.exports = [
   {
     type: 'confirm',
     name: 'autoprefix',
     message: 'Enable CSS autoprefixer?',
-    default: true
+    default: true,
   },
   {
     type: 'list',
@@ -14,18 +12,18 @@ module.exports = [
     choices: [
       {
         name: 'CSS',
-        value: 'css'
+        value: 'css',
       },
       {
         name: 'LESS',
-        value: 'less'
+        value: 'less',
       },
       {
         name: 'SCSS',
-        value: 'scss'
-      }
+        value: 'scss',
+      },
     ],
-    default: 0
+    default: 0,
   },
   {
     type: 'checkbox',
@@ -35,14 +33,14 @@ module.exports = [
     choices: [
       {
         name: 'BootStrap',
-        value: '//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css'
-      }
-    ]
+        value: '//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css',
+      },
+    ],
   },
   {
     type: 'confirm',
     name: 'enableSprites',
     message: 'Enable CSS Sprites?',
-    default: true
-  }
+    default: true,
+  },
 ];
