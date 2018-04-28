@@ -9,7 +9,8 @@
  */
 export function importAll(
   requireContext: __WebpackModuleApi.RequireContext,
-  callback?: (path: string) => any
+  callback?: (path: string) => any,
 ) {
   return requireContext.keys().map(callback || requireContext);
 }
+export default {};
