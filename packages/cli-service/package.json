@@ -1,0 +1,19 @@
+{
+  "name": "fuc-cli-service",
+  "version": "1.0.0",
+  "bin": "bin/fuc-cli-service.js",
+  "description": "local service for fuc-cli projects",
+  "author": "walfstark<1038999405@qq.com>",
+  "license": "MIT",
+  "keywords": ["vue", "cli"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wolfstark/fuc-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wolfstark/fuc-cli/issues"
+  },
+  "engines": {
+    "node": ">=6"
+  }
+}
