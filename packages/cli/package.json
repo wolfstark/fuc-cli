@@ -6,7 +6,7 @@
     "lint": "eslint fuc"
   },
   "bin": {
-    "fuc": "bin/fuc.js"
+    "fuc": "bin/fuc-cli.js"
   },
   "dependencies": {
     "chalk": "^2.4.0",

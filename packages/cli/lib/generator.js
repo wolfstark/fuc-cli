@@ -2,7 +2,7 @@
  * @Author: wangxiang
  * @Date: 2018-04-25 10:45:27
  * @Last Modified by: wangxiang
- * @Last Modified time: 2018-04-25 16:14:49
+ * @Last Modified time: 2018-04-28 11:45:25
  */
 /*
  * @Author: wangxiang
@@ -11,39 +11,12 @@
  * @Last Modified time: 2018-04-25 10:44:25
  */
 
-const _ = require('lodash');
+// const _ = require('lodash');
 const path = require('path');
 
 const Shell = require('shelljs');
 const log = require('./log');
 const Yeoman = require('yeoman-environment');
-
-// const env = Yeoman.createEnv();
-// function createGenerators(env) {
-//   const generators = Object.keys(env.getGeneratorsMeta()).reduce((namesByGenerator, generator) => {
-//     const parts = generator.split(':');
-//     const generatorName = parts.shift();
-
-//     // 如果我们第一次发现这个生成器，准备保存所有的子生成器
-//     if (!namesByGenerator[generatorName]) {
-//       // eslint-disable-next-line  no-param-reassign
-//       namesByGenerator[generatorName] = [];
-//     }
-
-//     // 如果子生成器 (!== app), 保存他
-//     if (parts[0] !== 'app') {
-//       namesByGenerator[generatorName].push(parts.join(':'));
-//     }
-
-//     return namesByGenerator;
-//   }, {});
-
-//   if (Object.keys(generators).length === 0) {
-//     return "  Couldn't find any generators, did you install any? ";
-//   }
-
-//   return generators;
-// }
 
 module.exports = (dirname, options) => {
   const inCurrentDir = dirname === '.' || dirname === './';
@@ -97,7 +70,4 @@ module.exports = (dirname, options) => {
       );
     }
   });
-  // if(generators)
-  // const run
-  // to compate nvm system
 };
