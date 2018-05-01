@@ -33,7 +33,7 @@ class Loading {
   }
 }
 /**
- * @module boi/util/log
+ * @module fuc/util/log
  */
 module.exports = {
   /**
