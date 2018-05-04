@@ -7,6 +7,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "cli-service",
+      "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
+      "args": ["serve", "--open"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Yeoman generator",
       "program": "/usr/local/lib/node_modules/yo/lib/cli.js",
       "args": ["fucapp"],
@@ -20,7 +29,7 @@
       "program": "${workspaceFolder}/packages/cli/bin/fuc.js",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "args": ["new", "app","-t","fucapp"]
+      "args": ["new", "app", "-t", "fucapp"]
     }
   ]
 }

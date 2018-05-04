@@ -2,6 +2,9 @@
   "name": "fuc-cli-service",
   "version": "1.0.0",
   "main": "lib/Service.js",
+  "bin": {
+    "fuc-cli-service": "bin/fuc-cli-service.js"
+  },
   "description": "local service for fuc-cli projects",
   "author": "walfstark<1038999405@qq.com>",
   "license": "MIT",
@@ -23,6 +26,7 @@
     "chalk": "^2.4.1",
     "debug": "^3.1.0",
     "fuc-cli-utils": "file:../cli-utils",
+    "lodash.defaultsdeep": "^4.6.0",
     "minimist": "^1.2.0",
     "read-pkg": "^3.0.0",
     "webpack-chain": "^4.6.0",
