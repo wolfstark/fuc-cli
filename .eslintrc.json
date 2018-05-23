@@ -1,6 +1,8 @@
 {
   "extends": "airbnb-base",
   "rules": {
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "global-require": "off",
+    "import/no-unresolved": "off"
   }
 }

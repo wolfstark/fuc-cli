@@ -1,4 +1,6 @@
-const { execSync } = require('child_process');
+const {
+  execSync,
+} = require('child_process');
 
 let _hasYarn;
 
@@ -10,7 +12,9 @@ exports.hasYarn = () => {
     return _hasYarn;
   }
   try {
-    execSync('yarnpkg --version', { stdio: 'ignore' });
+    execSync('yarnpkg --version', {
+      stdio: 'ignore',
+    });
     // eslint-disable-next-line no-return-assign
     return (_hasYarn = true);
   } catch (e) {

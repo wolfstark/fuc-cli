@@ -3,42 +3,42 @@ const {
   validate,
 } = require('fuc-cli-utils');
 
-const schema = createSchema(joi =>
-  joi.object({
-    baseUrl: joi.string(),
-    outputDir: joi.string(),
-    compiler: joi.boolean(),
-    productionSourceMap: joi.boolean(),
-    vueLoader: joi.object(),
-    parallel: joi.boolean(),
-    devServer: joi.object(),
-    dll: joi.alternatives().try(joi.boolean(), joi.array().items(joi.string())),
+const schema = createSchema(joi => joi.object({
+  baseUrl: joi.string(),
+  outputDir: joi.string(),
+  assetsDir: joi.string(),
+  compiler: joi.boolean(),
+  transpileDependencies: joi.array(),
+  productionSourceMap: joi.boolean(),
+  parallel: joi.boolean(),
+  devServer: joi.object(),
 
-    // css
-    css: joi.object({
-      modules: joi.boolean(),
-      extract: joi.alternatives().try(joi.boolean(), joi.object()),
-      localIdentName: joi.string(),
-      sourceMap: joi.boolean(),
-      loaderOptions: joi.object({
-        sass: joi.object(),
-        less: joi.object(),
-        stylus: joi.object(),
-      }),
+  // css
+  css: joi.object({
+    localIdentName: joi.string(),
+    extract: joi.alternatives().try(joi.boolean(), joi.object()),
+    sourceMap: joi.boolean(),
+    loaderOptions: joi.object({
+      sass: joi.object(),
+      less: joi.object(),
+      stylus: joi.object(),
     }),
+  }),
 
-    // webpack
-    chainWebpack: joi.func(),
-    configureWebpack: joi.alternatives().try(joi.object(), joi.func()),
+  // webpack
+  chainWebpack: joi.func(),
+  configureWebpack: joi.alternatives().try(
+    joi.object(),
+    joi.func(),
+  ),
 
-    // known runtime options for built-in plugins
-    lintOnSave: joi.any().valid([true, false, 'error']),
-    pwa: joi.object(),
+  // known runtime options for built-in plugins
+  lintOnSave: joi.any().valid([true, false, 'error']),
+  pwa: joi.object(),
 
-    // 3rd party plugin options
-    pluginOptions: joi.object(),
-  }));
-
+  // 3rd party plugin options
+  pluginOptions: joi.object(),
+}));
 exports.validate = (options, cb) => {
   validate(options, schema, cb);
 };

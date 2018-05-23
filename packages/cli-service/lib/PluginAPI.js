@@ -1,11 +1,12 @@
 const path = require('path');
-const chalk = require('chalk');
-const { matchesPluginId } = require('fuc-cli-utils');
+const {
+  matchesPluginId,
+} = require('fuc-cli-utils');
 
 class PluginAPI {
   /**
    * @param {string} id - Id of the plugin.
-   * @param {Service} service - A fuc-cli-service instance.
+   * @param {Service} service - A vue-cli-service instance.
    */
   constructor(id, service) {
     this.id = id;
@@ -33,24 +34,7 @@ class PluginAPI {
   }
 
   /**
-   * Set project mode and resolve env variables for that mode.
-   * this should be called by any registered command as early as possible, and
-   * should be called only once per command.
-   *
-   * @param {string} mode
-   */
-  setMode(mode) {
-    process.env.FUC_CLI_MODE = mode;
-    // by default, NODE_ENV and BABEL_ENV are set to "development" unless mode
-    // is production or test. However this can be overwritten in .env files.
-    process.env.NODE_ENV = process.env.BABEL_ENV =
-      mode === 'production' || mode === 'test' ? mode : 'development';
-    // load .env files based on mode
-    this.service.loadEnv(mode);
-  }
-
-  /**
-   * Register a command that will become available as `fuc-cli-service [name]`.
+   * Register a command that will become available as `vue-cli-service [name]`.
    *
    * @param {string} name
    * @param {object} [opts]
@@ -64,10 +48,13 @@ class PluginAPI {
    */
   registerCommand(name, opts, fn) {
     if (typeof opts === 'function') {
-      fn = opts;
-      opts = null;
+      fn = opts; // eslint-disable-line no-param-reassign
+      opts = null; // eslint-disable-line no-param-reassign
     }
-    this.service.commands[name] = { fn, opts };
+    this.service.commands[name] = {
+      fn,
+      opts: opts || {},
+    };
   }
 
   /**
@@ -107,22 +94,12 @@ class PluginAPI {
 
   /**
    * Resolve the final raw webpack config, that will be passed to webpack.
-   * Typically, you should call `setMode` before calling this.
    *
    * @param {ChainableWebpackConfig} [chainableConfig]
    * @return {object} Raw webpack config.
    */
   resolveWebpackConfig(chainableConfig) {
-    const config = this.service.resolveWebpackConfig(chainableConfig);
-    // performa a few warning checks
-    const options = this.service.projectOptions;
-    if (config.output.path !== this.resolve(options.outputDir)) {
-      console.error(chalk.red('\n\nConfiguration Error: ' +
-            'Avoid modifying webpack output.path directly. ' +
-            'Use the "outputDir" option instead.\n'));
-      process.exit(1);
-    }
-    return config;
+    return this.service.resolveWebpackConfig(chainableConfig);
   }
 
   /**

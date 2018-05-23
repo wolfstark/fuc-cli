@@ -10,6 +10,12 @@ function parse(src) {
       const key = keyValueArr[1];
       let value = keyValueArr[2] || '';
 
+      // expand newlines in quoted values
+      const len = value ? value.length : 0;
+      if (len > 0 && value.charAt(0) === '"' && value.charAt(len - 1) === '"') {
+        value = value.replace(/\\n/gm, '\n');
+      }
+
       value = value.replace(/(^["']|["']$)/g, '').trim();
       res[key] = value;
     }
