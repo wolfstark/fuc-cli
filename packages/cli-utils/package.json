@@ -7,7 +7,11 @@
     "type": "git",
     "url": "git+https://github.com/wolfstark/fuc-cli.git"
   },
-  "keywords": ["fuc", "cli", "cli-shared-utils"],
+  "keywords": [
+    "fuc",
+    "cli",
+    "cli-shared-utils"
+  ],
   "author": "walfstark<1038999405@qq.com>",
   "license": "MIT",
   "bugs": {

@@ -10,8 +10,6 @@
       "name": "cli-service",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
       "args": ["serve", "--open"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",

@@ -6,7 +6,7 @@ const joi = require('joi');
  * @param {any} fn
  */
 exports.createSchema = function createSchema(fn) {
-  fn(joi);
+  return fn(joi);
 };
 
 exports.validate = (obj, schema, cb) => {

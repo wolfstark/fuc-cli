@@ -9,7 +9,12 @@ const defaults = {
   port: 8080,
   https: false,
 };
-
+/**
+ * 为entry注入开发bundle
+ *
+ * @param {WebpackConfig} config
+ * @param {array<string>} devClient
+ */
 function addDevClientToEntry(config, devClient) {
   const {
     entry,
@@ -58,7 +63,7 @@ module.exports = (api, options) => {
     // load user devServer options
     const projectDevServerOptions = options.devServer || {};
 
-    // resolve webpack config
+    // 解析用户webpack配置
     const webpackConfig = api.resolveWebpackConfig();
 
     const entry = args._[0];

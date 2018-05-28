@@ -4,7 +4,7 @@ const debug = require('debug');
 const chalk = require('chalk');
 const readPkg = require('read-pkg');
 const merge = require('webpack-merge');
-// const Config = require('webpack-chain');
+const Config = require('webpack-chain');
 const PluginAPI = require('./PluginAPI');
 const loadEnvConst = require('./util/loadEnvConst');
 const defaultsDeep = require('lodash.defaultsdeep');
@@ -171,9 +171,9 @@ module.exports = class Service {
       // './commands/inspect',
       // './commands/help',
       // config plugins are order sensitive
-      // './config/base',
-      // './config/css',
-      // './config/dev',
+      './config/base',
+      './config/css',
+      './config/dev',
       // './config/prod',
       // './config/app',
     ].map(idToPlugin);
@@ -236,8 +236,8 @@ module.exports = class Service {
       // is production or test. However this can be overwritten in .env files.
       process.env.BABEL_ENV =
         (mode === 'production' || mode === 'test') ?
-          mode :
-          'development';
+        mode :
+        'development';
       process.env.NODE_ENV = process.env.BABEL_ENV;
     }
 
@@ -260,7 +260,12 @@ module.exports = class Service {
     load(basePath);
     load(localPath);
   }
-  resolveChainableWebpackConfig() {}
+  resolveChainableWebpackConfig() {
+    const chainableConfig = new Config();
+    // apply chains
+    this.webpackChainFns.forEach(fn => fn(chainableConfig));
+    return chainableConfig;
+  }
   resolveWebpackConfig(chainableConfig = this.resolveChainableWebpackConfig()) {
     if (!this.initialized) {
       throw new Error('Service must call init() before calling resolveWebpackConfig().');
