@@ -93,9 +93,9 @@ class PluginAPI {
   }
 
   /**
-   * Resolve the final raw webpack config, that will be passed to webpack.
+   * 解析最终的Webpack配置， 将被传递给Webpack
    *
-   * @param {ChainableWebpackConfig} [chainableConfig]
+   * @param {ChainableWebpackConfig} chainableConfig
    * @return {object} Raw webpack config.
    */
   resolveWebpackConfig(chainableConfig) {

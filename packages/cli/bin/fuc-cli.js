@@ -29,13 +29,19 @@ command
   });
 // FeatureInfo();
 // 开发服务器
+/**
+ * 编译模块使用全局方案管理多个项目时，容易发生版本更新编译结果不可预见
+ */
 command
   .command('serve')
   .description('run local server for development')
   .action(() => {
-    process.env.FUC_ENV = 'dev';
-    const service = Service(process.cwd());
-    service.run('serve', { _: ['serve'], open: true }, ['serve', '--open']).catch((err) => {
+    // process.env.FUC_ENV = 'dev';
+    const service = new Service(process.cwd());
+    service.run('serve', {
+      _: ['serve'],
+      open: true,
+    }, ['serve', '--open']).catch((err) => {
       log.error(err);
       process.exit(1);
     });
@@ -55,6 +61,6 @@ command
   })
   .on('--help', () => {
     log.info('\n\n  Examples:\n');
-    log.info('    $ boi serve\n');
+    log.info('    $ fuc serve\n');
   });
 command.parse(process.argv);

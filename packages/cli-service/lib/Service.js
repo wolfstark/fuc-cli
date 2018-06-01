@@ -164,7 +164,7 @@ module.exports = class Service {
       id: id.replace(/^.\//, 'built-in:'),
       apply: require(id), // eslint-disable-line global-require,import/no-dynamic-require
     });
-
+    // TODO: 添加其他命令
     const builtInPlugins = [
       './commands/serve',
       // './commands/build',
@@ -236,8 +236,8 @@ module.exports = class Service {
       // is production or test. However this can be overwritten in .env files.
       process.env.BABEL_ENV =
         (mode === 'production' || mode === 'test') ?
-        mode :
-        'development';
+          mode :
+          'development';
       process.env.NODE_ENV = process.env.BABEL_ENV;
     }
 

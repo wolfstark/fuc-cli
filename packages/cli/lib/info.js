@@ -14,7 +14,7 @@ module.exports = function() {
         '|_|     \\_____/ \\_____|      \\_____| |_____| |_|',
       ].join('\n'),
     ) +
-    `\n\n Version: ${require('../../package').version}\n\n`;
+    `\n\n Version: ${require('../package').version}\n\n`;
 
   process.stdout.write(Content);
 };

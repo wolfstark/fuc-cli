@@ -14,8 +14,8 @@ module.exports = (api, options) => {
       localIdentName = '[name]_[local]_[hash:base64:5]',
       loaderOptions = {},
     } = options.css || {};
-
-    const shadowMode = !!process.env.VUE_CLI_CSS_SHADOW_MODE;
+    // build为web-component的时为true
+    const shadowMode = !!process.env.FUC_CLI_CSS_SHADOW_MODE;
     const isProd = process.env.NODE_ENV === 'production';
     const shouldExtract = isProd && extract !== false && !shadowMode;
     const extractOptions = Object.assign({
