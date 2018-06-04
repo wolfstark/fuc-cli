@@ -175,7 +175,7 @@ module.exports = class Service {
       './config/css',
       './config/dev',
       // './config/prod',
-      // './config/app',
+      './config/app',
     ].map(idToPlugin);
 
     const projectPlugins = Object.keys(this.pkg.dependencies || {})

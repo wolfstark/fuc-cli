@@ -7,7 +7,7 @@ module.exports = (api, options) => {
     webpackConfig
       .context(api.service.context)
       .entry('app')
-      .add('./src/main.js')
+      .add('./src/main.ts')
       .end()
       .output
       .path(api.resolve(options.outputDir))

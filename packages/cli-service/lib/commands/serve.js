@@ -116,6 +116,7 @@ module.exports = (api, options) => {
     // create server
     const server = new WebpackDevServer(compiler, Object.assign({
       clientLogLevel: 'none',
+      // 使用 index.html替代404
       historyApiFallback: {
         disableDotRule: true,
       },

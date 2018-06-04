@@ -91,6 +91,7 @@ exports.defaults = () => ({
     host: '0.0.0.0',
     port: 8080,
     https: false,
+    // 需要双服务器时使用
     hotOnly: false,
     proxy: null, // string | Object
     before: app => {}

@@ -2,7 +2,7 @@
 
 module.exports = (api, options) => {
   api.chainWebpack((webpackConfig) => {
-    // only apply when there's no alternative target
+    // FUC_CLI_TARGET = lib | web-component default = null
     if (process.env.FUC_CLI_TARGET) {
       return;
     }
@@ -13,6 +13,9 @@ module.exports = (api, options) => {
       templateParameters: (compilation, assets, pluginOptions) => {
         // enhance html-webpack-plugin's built in template params
         let stats;
+
+        process.stdout.write(compilation, assets, pluginOptions);
+
         return Object.assign({
           // make stats lazy as it is expensive
           get webpack() {
@@ -82,8 +85,8 @@ module.exports = (api, options) => {
           chunksSortMode: 'dependency',
         })]);
 
-      // code splitting
       webpackConfig
+        // 所有的公共chunks都将被抽取
         .optimization.splitChunks({
           chunks: 'all',
         });
