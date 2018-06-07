@@ -4,7 +4,7 @@ module.exports = (api, {
 }) => {
   const useThreads = process.env.NODE_ENV === 'production' && parallel;
   const cacheDirectory = api.resolve('node_modules/.cache/cache-loader');
-  const cliServicePath = require('path').dirname(require.resolve('@vue/cli-service'));
+  const cliServicePath = require('path').dirname(require.resolve('fuc-cli-service'));
 
   api.chainWebpack((webpackConfig) => {
     const jsRule = webpackConfig.module

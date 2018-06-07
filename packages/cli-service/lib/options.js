@@ -50,33 +50,24 @@ exports.defaults = () => ({
   // where to output built files
   outputDir: 'dist',
 
+  // where to put static assets (js/css/img/font/...)
+  assetsDir: '',
+
   // boolean, use full build?
   compiler: false,
 
-  // vue-loader options
-  vueLoader: {
-    preserveWhitespace: false,
-    template: {
-      // for pug
-      doctype: 'html',
-    },
-  },
+  // deps to transpile
+  transpileDependencies: [],
 
   // sourceMap for production build?
   productionSourceMap: true,
 
   // use thread-loader for babel & TS in production build
   // enabled by default if the machine has more than 1 cores
-  // eslint-disable-next-line global-require
   parallel: require('os').cpus().length > 1,
-
-  // split vendors using autoDLLPlugin?
-  // can be an explicit list of dependencies to include in the DLL chunk.
-  dll: false,
 
   css: {
     // extract: true,
-    // modules: false,
     // localIdentName: '[name]_[local]_[hash:base64:5]',
     // sourceMap: false,
     // loaderOptions: {}
@@ -87,14 +78,13 @@ exports.defaults = () => ({
 
   devServer: {
     /*
-    open: process.platform === 'darwin',
-    host: '0.0.0.0',
-    port: 8080,
-    https: false,
-    // 需要双服务器时使用
-    hotOnly: false,
-    proxy: null, // string | Object
-    before: app => {}
-  */
+      open: process.platform === 'darwin',
+      host: '0.0.0.0',
+      port: 8080,
+      https: false,
+      hotOnly: false,
+      proxy: null, // string | Object
+      before: app => {}
+    */
   },
 });

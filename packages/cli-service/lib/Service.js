@@ -177,7 +177,7 @@ module.exports = class Service {
       // './config/prod',
       './config/app',
       './config/babel',
-      // './config/typescript',
+      './config/typescript',
     ].map(idToPlugin);
 
     const projectPlugins = Object.keys(this.pkg.dependencies || {})
