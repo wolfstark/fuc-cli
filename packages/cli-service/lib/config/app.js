@@ -14,7 +14,7 @@ module.exports = (api, options) => {
         // enhance html-webpack-plugin's built in template params
         let stats;
 
-        process.stdout.write(compilation, assets, pluginOptions);
+        // process.stdout.write(compilation, assets, pluginOptions);
 
         return Object.assign({
           // make stats lazy as it is expensive
@@ -86,7 +86,7 @@ module.exports = (api, options) => {
         })]);
 
       webpackConfig
-        // 所有的公共chunks都将被抽取
+        // webpack4 所有的公共chunks都将被抽取
         .optimization.splitChunks({
           chunks: 'all',
         });
