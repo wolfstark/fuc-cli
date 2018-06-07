@@ -9,7 +9,13 @@
       "request": "launch",
       "name": "cli-service",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
-      "args": ["serve", "--open"],
+      "args": ["serve", "--open"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "babel-config",
+      "program": "${workspaceFolder}/packages/babel-preset-app/index.js"
     },
     {
       "type": "node",

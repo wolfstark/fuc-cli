@@ -3,7 +3,18 @@ const path = require('path');
 const defaultPolyfills = [
   'es6.promise',
 ];
-
+// TODO: 应该为不同环境提供预设的browserlist
+/**
+ * 通过targets环境决定polyfills是否需要注入
+ *
+ * @param {object} targets browserlist
+ * @param {[]:string} includes polyfills
+ * @param {object} {
+ *   ignoreBrowserslistConfig,
+ *   configPath,
+ * }
+ * @returns
+ */
 function getPolyfills(targets, includes, {
   ignoreBrowserslistConfig,
   configPath,
@@ -53,10 +64,7 @@ module.exports = (context, options = {}) => {
 
   const targets = rawTargets;
 
-  // included-by-default polyfills. These are common polyfills that 3rd party
-  // dependencies may rely on (e.g. Vuex relies on Promise), but since with
-  // useBuiltIns: 'usage' we won't be running Babel on these deps, they need to
-  // be force-included.
+  // 引入默认的polyfill列表，因为useBuiltIns === 'usage'，当第三方依赖存在helper需求时，不会被引入
   let polyfills;
   const buildTarget = 'app';
   if (buildTarget === 'app' && useBuiltIns === 'usage') {
@@ -70,7 +78,7 @@ module.exports = (context, options = {}) => {
   } else {
     polyfills = [];
   }
-
+  // useBuiltIns:true 实现动态按需加载
   const envOptions = {
     spec,
     loose,
@@ -85,18 +93,16 @@ module.exports = (context, options = {}) => {
     forceAllTransforms,
   };
 
-    // cli-plugin-jest sets this to true because Jest runs without bundling
-    // if (process.env.VUE_CLI_BABEL_TRANSPILE_MODULES) {
-    //   envOptions.modules = 'commonjs'
-    //   // necessary for dynamic import to work in tests
-    //   plugins.push(require('babel-plugin-dynamic-import-node'))
-    // }
+  // cli-plugin-jest sets this to true because Jest runs without bundling
+  // if (process.env.VUE_CLI_BABEL_TRANSPILE_MODULES) {
+  //   envOptions.modules = 'commonjs'
+  //   // necessary for dynamic import to work in tests
+  //   plugins.push(require('babel-plugin-dynamic-import-node'))
+  // }
 
-    // pass options along to babel-preset-env
   presets.push([require('@babel/preset-env'), envOptions]);
 
-  // stage 2. This includes some important transforms, e.g. dynamic import
-  // and rest object spread.
+  // stage 2. This includes some important transforms, e.g. dynamic import and rest object spread.
   presets.push([require('@babel/preset-stage-2'), {
     loose,
     useBuiltIns: useBuiltIns !== false,
