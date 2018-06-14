@@ -7,7 +7,7 @@ module.exports = (api, options) => {
     webpackConfig
       .context(api.service.context)
       .entry('app')
-      .add('./src/main.ts')
+      .add('./src/main.js')
       .end()
       .output
       .path(api.resolve(options.outputDir))
@@ -29,7 +29,7 @@ module.exports = (api, options) => {
       .set('vue$', options.compiler ? 'vue/dist/vue.esm.js' : 'vue/dist/vue.runtime.esm.js');
 
     webpackConfig.resolveLoader
-      .set('symlinks', true)
+      // .set('symlinks', true)
       .modules
       .add('node_modules')
       .add(api.resolve('node_modules'))
