@@ -1,4 +1,6 @@
-import './setPublicPath'
-import mod from '~entry'
-export default mod
-export * from '~entry'
+import mod from '~entry';
+import './setPublicPath';
+
+export default mod;
+export * from '~entry';
+

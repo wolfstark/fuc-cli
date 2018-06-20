@@ -112,6 +112,11 @@ module.exports = class Service {
     const {
       fn,
     } = command;
+    /**
+     * command:'serve',
+     * args:{_:['serve'],open:true}
+     * rawArgv:['serve','--open']
+     */
     return fn(args, rawArgv);
   }
   init(mode = process.env.FUC_CLI_MODE) {
@@ -167,7 +172,7 @@ module.exports = class Service {
     // TODO: 添加其他命令
     const builtInPlugins = [
       './commands/serve',
-      // './commands/build',
+      './commands/build',
       // './commands/inspect',
       // './commands/help',
       // config plugins are order sensitive

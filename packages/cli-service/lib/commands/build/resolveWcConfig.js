@@ -1,98 +1,107 @@
-const path = require('path')
-const { resolveEntry, fileToComponentName } = require('./resolveWcEntry')
+const path = require('path');
+const {
+  resolveEntry,
+  fileToComponentName,
+} = require('./resolveWcEntry');
 
-module.exports = (api, { target, entry, name }) => {
+module.exports = (api, {
+  target,
+  entry,
+  name,
+}) => {
   // setting this disables app-only configs
-  process.env.VUE_CLI_TARGET = 'web-component'
+  process.env.VUE_CLI_TARGET = 'web-component';
   // Disable CSS extraction and turn on CSS shadow mode for vue-style-loader
-  process.env.VUE_CLI_CSS_SHADOW_MODE = true
+  process.env.VUE_CLI_CSS_SHADOW_MODE = true;
 
-  const { log, error } = require('@vue/cli-shared-utils')
-  const abort = msg => {
-    log()
-    error(msg)
-    process.exit(1)
-  }
+  const {
+    log,
+    error,
+  } = require('@vue/cli-shared-utils');
+  const abort = (msg) => {
+    log();
+    error(msg);
+    process.exit(1);
+  };
 
-  const isAsync = /async/.test(target)
+  const isAsync = /async/.test(target);
 
   // generate dynamic entry based on glob files
-  const resolvedFiles = require('globby').sync([entry], { cwd: api.resolve('.') })
+  const resolvedFiles = require('globby').sync([entry], {
+    cwd: api.resolve('.'),
+  });
 
   if (!resolvedFiles.length) {
-    abort(`entry pattern "${entry}" did not match any files.`)
+    abort(`entry pattern "${entry}" did not match any files.`);
   }
-  let libName
-  let prefix
+  let libName;
+  let prefix;
   if (resolvedFiles.length === 1) {
     // in single mode, determine the lib name from filename
-    libName = name || fileToComponentName('', resolvedFiles[0]).kebabName
-    prefix = ''
+    libName = name || fileToComponentName('', resolvedFiles[0]).kebabName;
+    prefix = '';
     if (libName.indexOf('-') < 0) {
-      abort(`--name must contain a hyphen when building a single web component.`)
+      abort('--name must contain a hyphen when building a single web component.');
     }
   } else {
     // multi mode
-    libName = prefix = (name || api.service.pkg.name)
+    libName = prefix = (name || api.service.pkg.name);
     if (!libName) {
-      abort(`--name is required when building multiple web components.`)
+      abort('--name is required when building multiple web components.');
     }
   }
 
-  const dynamicEntry = resolveEntry(prefix, libName, resolvedFiles, isAsync)
+  const dynamicEntry = resolveEntry(prefix, libName, resolvedFiles, isAsync);
 
-  function genConfig (minify, genHTML) {
-    const config = api.resolveChainableWebpackConfig()
+  function genConfig(minify, genHTML) {
+    const config = api.resolveChainableWebpackConfig();
 
     // make sure not to transpile wc-wrapper
     config.module
       .rule('js')
-        .exclude
-          .add(/vue-wc-wrapper/)
+      .exclude
+      .add(/vue-wc-wrapper/);
 
     // only minify min entry
     if (!minify) {
-      config.optimization.minimize(false)
+      config.optimization.minimize(false);
     }
 
     // externalize Vue in case user imports it
     config
       .externals({
-        vue: 'Vue'
-      })
+        vue: 'Vue',
+      });
 
     config
       .plugin('web-component-options')
-        .use(require('webpack/lib/DefinePlugin'), [{
-          'process.env': {
-            CUSTOM_ELEMENT_NAME: JSON.stringify(libName)
-          }
-        }])
+      .use(require('webpack/lib/DefinePlugin'), [{
+        'process.env': {
+          CUSTOM_ELEMENT_NAME: JSON.stringify(libName),
+        },
+      }]);
 
     // enable shadow mode in vue-loader
     config.module
       .rule('vue')
-        .use('vue-loader')
-          .tap(options => {
-            options.shadowMode = true
-            return options
-          })
+      .use('vue-loader')
+      .tap((options) => {
+        options.shadowMode = true;
+        return options;
+      });
 
     if (genHTML) {
       config
         .plugin('demo-html')
-          .use(require('html-webpack-plugin'), [{
-            template: path.resolve(__dirname, `./demo-wc.html`),
-            inject: false,
-            filename: 'demo.html',
-            libName,
-            components:
-              prefix === ''
-                ? [libName]
-                : resolvedFiles.map(file => {
-                  return fileToComponentName(prefix, file).kebabName
-                })
-          }])
+        .use(require('html-webpack-plugin'), [{
+          template: path.resolve(__dirname, './demo-wc.html'),
+          inject: false,
+          filename: 'demo.html',
+          libName,
+          components: prefix === '' ?
+            [libName] :
+            resolvedFiles.map(file => fileToComponentName(prefix, file).kebabName),
+        }]);
     }
 
     // set entry/output last so it takes higher priority than user
@@ -101,29 +110,29 @@ module.exports = (api, { target, entry, name }) => {
     // set proxy entry for *.vue files
     config.resolve
       .alias
-        .set('~root', api.resolve('.'))
+      .set('~root', api.resolve('.'));
 
-    const rawConfig = api.resolveWebpackConfig(config)
+    const rawConfig = api.resolveWebpackConfig(config);
 
-    const entryName = `${libName}${minify ? `.min` : ``}`
+    const entryName = `${libName}${minify ? '.min' : ''}`;
     rawConfig.entry = {
-      [entryName]: dynamicEntry
-    }
+      [entryName]: dynamicEntry,
+    };
 
     Object.assign(rawConfig.output, {
       filename: `${entryName}.js`,
-      chunkFilename: `${libName}.[name]${minify ? `.min` : ``}.js`,
+      chunkFilename: `${libName}.[name]${minify ? '.min' : ''}.js`,
       // use dynamic publicPath so this can be deployed anywhere
       // the actual path will be determined at runtime by checking
       // document.currentScript.src.
-      publicPath: ''
-    })
+      publicPath: '',
+    });
 
-    return rawConfig
+    return rawConfig;
   }
 
   return [
     genConfig(false, true),
-    genConfig(true, false)
-  ]
-}
+    genConfig(true, false),
+  ];
+};

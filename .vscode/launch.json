@@ -3,13 +3,19 @@
   // 悬停以查看现有属性的描述。
   // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
-  "configurations": [
+  "configurations": [{
+      "type": "node",
+      "request": "launch",
+      "name": "serve",
+      "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
+      "args": ["serve", "--open"]
+    },
     {
       "type": "node",
       "request": "launch",
-      "name": "cli-service",
+      "name": "build",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
-      "args": ["serve", "--open"]
+      "args": ["build"]
     },
     {
       "type": "node",
@@ -29,7 +35,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "启动程序",
+      "name": "new app",
       "program": "${workspaceFolder}/packages/cli/bin/fuc.js",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

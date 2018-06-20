@@ -24,3 +24,8 @@ exports.error = (msg, tag = null) => {
     console.error(msg.stack);
   }
 };
+exports.done = (msg, tag = null) => {
+  console.log(format(chalk.bgGreen.black(' DONE ') + (tag ? chalkTag(tag) : ''), msg));
+};
+
+exports.log = (msg = '', tag = null) => (tag ? console.log(format(chalkTag(tag), msg)) : console.log(msg));
