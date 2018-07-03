@@ -5,9 +5,9 @@ const chalk = require('chalk');
 const readPkg = require('read-pkg');
 const merge = require('webpack-merge');
 const Config = require('webpack-chain');
+const defaultsDeep = require('lodash.defaultsdeep');
 const PluginAPI = require('./PluginAPI');
 const loadEnvConst = require('./util/loadEnvConst');
-const defaultsDeep = require('lodash.defaultsdeep');
 const {
   error,
   warn,
@@ -81,6 +81,7 @@ module.exports = class Service {
       },
     }) => Object.assign(modes, defaultModes), {});
   }
+
   /**
    * @example fuc-cli-service serve --open
    * command:'serve',
@@ -119,6 +120,7 @@ module.exports = class Service {
      */
     return fn(args, rawArgv);
   }
+
   init(mode = process.env.FUC_CLI_MODE) {
     if (this.initialized) {
       return;
@@ -155,6 +157,7 @@ module.exports = class Service {
       this.webpackRawConfigFns.push(this.projectOptions.configureWebpack);
     }
   }
+
   /**
    * require插件并返回插件列表
    *
@@ -179,10 +182,11 @@ module.exports = class Service {
       './config/base',
       './config/css',
       './config/dev',
-      // './config/prod',
+      './config/prod',
       './config/app',
       './config/babel',
       './config/typescript',
+      './config/eslint',
     ].map(idToPlugin);
 
     const projectPlugins = Object.keys(this.pkg.dependencies || {})
@@ -191,6 +195,7 @@ module.exports = class Service {
       .map(idToPlugin);
     return builtInPlugins.concat(projectPlugins);
   }
+
   loadUserOptions() {
     // fuc.config.js
     let fileConfig;
@@ -231,20 +236,21 @@ module.exports = class Service {
 
     return resolved;
   }
+
   resolvePkg() {
     if (fs.existsSync(path.join(this.context, 'package.json'))) {
       return readPkg.sync(this.context);
     }
     return {};
   }
+
   loadEnv(mode) {
     if (mode) {
       // by default, NODE_ENV and BABEL_ENV are set to "development" unless mode
       // is production or test. However this can be overwritten in .env files.
-      process.env.BABEL_ENV =
-        (mode === 'production' || mode === 'test') ?
-          mode :
-          'development';
+      process.env.BABEL_ENV = (mode === 'production' || mode === 'test')
+        ? mode
+        : 'development';
       process.env.NODE_ENV = process.env.BABEL_ENV;
     }
 
@@ -267,12 +273,14 @@ module.exports = class Service {
     load(basePath);
     load(localPath);
   }
+
   resolveChainableWebpackConfig() {
     const chainableConfig = new Config();
     // apply chains
     this.webpackChainFns.forEach(fn => fn(chainableConfig));
     return chainableConfig;
   }
+
   resolveWebpackConfig(chainableConfig = this.resolveChainableWebpackConfig()) {
     if (!this.initialized) {
       throw new Error('Service must call init() before calling resolveWebpackConfig().');

@@ -126,7 +126,7 @@ module.exports = (api, options) => {
       quiet: true,
       compress: isProduction,
       publicPath: '/',
-      overlay: isProduction // TODO disable this
+      overlay: isProduction // TODO: disable this
         ?
         false : {
           warnings: false,
@@ -137,7 +137,7 @@ module.exports = (api, options) => {
       proxy: proxySettings,
       before(app) {
         // launch editor support.
-        // this works with fuc-devtools & @fuc/cli-overlay
+        // this works with vue-devtools & @fuc/cli-overlay
         app.use('/__open-in-editor', launchEditorMiddleware(() => console.log('To specify an editor, sepcify the EDITOR env variable or ' +
           'add "editor" field to your Vue project config.\n')));
         // allow other plugins to register middlewares, e.g. PWA

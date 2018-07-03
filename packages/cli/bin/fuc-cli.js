@@ -37,6 +37,7 @@ command
   .description('run local server for development')
   .action(() => {
     // process.env.FUC_ENV = 'dev';
+    // 记录执行路径
     const service = new Service(process.cwd());
     service.run('serve', {
       _: ['serve'],

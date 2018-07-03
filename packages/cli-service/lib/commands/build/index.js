@@ -13,7 +13,7 @@ module.exports = (api, options) => {
   api.registerCommand(
     'build', {
       description: 'build for production',
-      usage: 'vue-cli-service build [options] [entry|pattern]',
+      usage: 'fuc-cli-service build [options] [entry|pattern]',
       options: {
         '--mode': 'specify env mode (default: production)',
         '--watch': 'watch for changes',
@@ -123,11 +123,12 @@ module.exports = (api, options) => {
           }
 
           if (stats.hasErrors()) {
-            return reject('Build failed with errors.');
+            return reject('Build failed with errors.'); // eslint-disable-line prefer-promise-reject-errors
           }
 
           // if (!args.silent) {
           const targetDirShort = path.relative(api.service.context, targetDir);
+          // 输出资源打包完成后信息
           log(formatStats(stats, targetDirShort, api));
           if (args.target === 'app') {
             if (!args.watch) {
@@ -137,7 +138,7 @@ module.exports = (api, options) => {
             }
             if (
               options.baseUrl === '/' &&
-              // 如果这是第一次构建，只记录提示
+              // 如果这是第一次构建，打印提示
               !fs.existsSync(api.resolve('node_modules/.cache'))
             ) {
               info('The app is built assuming that it will be deployed at the root of a domain.');
