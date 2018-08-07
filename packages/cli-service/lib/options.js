@@ -5,6 +5,7 @@ const {
 
 const schema = createSchema(joi => joi.object({
   baseUrl: joi.string(),
+  multiplePages: joi.boolean(),
   outputDir: joi.string(),
   assetsDir: joi.string(),
   compiler: joi.boolean(),
@@ -46,6 +47,8 @@ exports.validate = (options, cb) => {
 exports.defaults = () => ({
   // project deployment base
   baseUrl: '/',
+
+  multiplePages: false,
 
   // where to output built files
   outputDir: 'dist',
