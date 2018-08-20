@@ -8,7 +8,8 @@
       "request": "launch",
       "name": "serve",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
-      "args": ["serve", "--open"]
+      "args": ["serve", "--open"],
+      "cwd": "/Users/daywatch/project/app2"
     },
     {
       "type": "node",

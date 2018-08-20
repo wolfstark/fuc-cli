@@ -25,7 +25,9 @@ function parse(src) {
 module.exports = function loadEnvConst(path = '.env') {
   const config = parse(fs.readFileSync(path, 'utf-8'));
   Object.keys(config).forEach((key) => {
-    process.env[key] = config[key];
+    if (typeof process.env[key] === 'undefined') {
+      process.env[key] = config[key];
+    }
   });
   return config;
 };

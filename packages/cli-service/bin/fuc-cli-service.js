@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-// const semver = require('semver');
+const semver = require('semver');
 const {
   error,
 } = require('fuc-cli-utils');
-// const requiredVersion = require('../package.json').engines.node;
+const requiredVersion = require('../package.json').engines.node;
 
-// if (!semver.satisfies(process.version, requiredVersion)) {
-//   error(`You are using Node ${process.version}, but fuc-cli-service ` +
-//       `requires Node ${requiredVersion}.\nPlease upgrade your Node version.`);
-//   process.exit(1);
-// }
+
+if (!semver.satisfies(process.version, requiredVersion)) {
+  error(`当前Node版本 ${process.version},  fuc-cli-service ` +
+    `依赖 Node ${requiredVersion}.\n请升级 NodeJS.`);
+  process.exit(1);
+}
 
 const Service = require('../lib/Service');
 

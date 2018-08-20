@@ -1,16 +1,27 @@
 const path = require('path');
-const {
-  matchesPluginId,
-} = require('fuc-cli-utils');
+const hash = require('hash-sum');
+const { matchesPluginId } = require('fuc-cli-utils');
+/* eslint-disable no-param-reassign,no-restricted-syntax */
+// Note: if a plugin-registered command needs to run in a specific default mode,
+// the plugin needs to expose it via `module.exports.defaultModes` in the form
+// of { [commandName]: mode }. This is because the command mode needs to be
+// known and applied before loading user options / applying plugins.
 
 class PluginAPI {
   /**
    * @param {string} id - Id of the plugin.
-   * @param {Service} service - A fuc-cli-service instance.
+   * @param {Service} service - A vue-cli-service instance.
    */
   constructor(id, service) {
     this.id = id;
     this.service = service;
+  }
+
+  /**
+   * Current working directory.
+   */
+  getCwd() {
+    return this.service.context;
   }
 
   /**
@@ -30,11 +41,17 @@ class PluginAPI {
    * @return {boolean}
    */
   hasPlugin(id) {
+    if (id === 'router') id = 'vue-router';
+    if (['vue-router', 'vuex'].includes(id)) {
+      const { pkg } = this.service;
+      return ((pkg.dependencies && pkg.dependencies[id])
+      || (pkg.devDependencies && pkg.devDependencies[id]));
+    }
     return this.service.plugins.some(p => matchesPluginId(id, p.id));
   }
 
   /**
-   * Register a command that will become available as `fuc-cli-service [name]`.
+   * Register a command that will become available as `vue-cli-service [name]`.
    *
    * @param {string} name
    * @param {object} [opts]
@@ -48,13 +65,10 @@ class PluginAPI {
    */
   registerCommand(name, opts, fn) {
     if (typeof opts === 'function') {
-      fn = opts; // eslint-disable-line no-param-reassign
-      opts = null; // eslint-disable-line no-param-reassign
+      fn = opts;
+      opts = null;
     }
-    this.service.commands[name] = {
-      fn,
-      opts: opts || {},
-    };
+    this.service.commands[name] = { fn, opts: opts || {} };
   }
 
   /**
@@ -93,9 +107,9 @@ class PluginAPI {
   }
 
   /**
-   * 解析最终的Webpack配置， 将被传递给Webpack
+   * Resolve the final raw webpack config, that will be passed to webpack.
    *
-   * @param {ChainableWebpackConfig} chainableConfig
+   * @param {ChainableWebpackConfig} [chainableConfig]
    * @return {object} Raw webpack config.
    */
   resolveWebpackConfig(chainableConfig) {
@@ -113,6 +127,49 @@ class PluginAPI {
    */
   resolveChainableWebpackConfig() {
     return this.service.resolveChainableWebpackConfig();
+  }
+
+  /**
+   * Generate a cache identifier from a number of variables
+   */
+  genCacheConfig(id, partialIdentifier, configFiles) {
+    const fs = require('fs');
+    const cacheDirectory = this.resolve(`node_modules/.cache/${id}`);
+
+    const variables = {
+      partialIdentifier,
+      'cli-service': require('../package.json').version,
+      'cache-loader': require('cache-loader/package.json').version,
+      env: process.env.NODE_ENV,
+      test: !!process.env.VUE_CLI_TEST,
+      config: [
+        this.service.projectOptions.chainWebpack,
+        this.service.projectOptions.configureWebpack,
+      ],
+    };
+
+    if (configFiles) {
+      const readConfig = (file) => {
+        const absolutePath = this.resolve(file);
+        if (fs.existsSync(absolutePath)) {
+          return fs.readFileSync(absolutePath, 'utf-8');
+        }
+        return null;
+      };
+      if (!Array.isArray(configFiles)) {
+        configFiles = [configFiles];
+      }
+      for (const file of configFiles) {
+        const content = readConfig(file);
+        if (content) {
+          variables.configFiles = content;
+          break;
+        }
+      }
+    }
+
+    const cacheIdentifier = hash(variables);
+    return { cacheDirectory, cacheIdentifier };
   }
 }
 

@@ -8,16 +8,9 @@ const Config = require('webpack-chain');
 const defaultsDeep = require('lodash.defaultsdeep');
 const PluginAPI = require('./PluginAPI');
 const loadEnvConst = require('./util/loadEnvConst');
-const {
-  error,
-  warn,
-  isPlugin,
-} = require('fuc-cli-utils');
+const { error, warn, isPlugin } = require('fuc-cli-utils');
 
-const {
-  defaults,
-  validate,
-} = require('./options');
+const { defaults, validate } = require('./options');
 /**
  * @example
  *foo/fun -> /foo/fun/
@@ -41,10 +34,24 @@ function ensureSlash(config, key) {
 
 function removeSlash(config, key) {
   if (typeof config[key] === 'string') {
-    // 前后有/时去掉
+    // 去掉尾部/
     // eslint-disable-next-line no-param-reassign
-    config[key] = config[key].replace(/^\/|\/$/g, '');
+    config[key] = config[key].replace(/\/$/g, '');
   }
+}
+
+function cloneRuleNames(to, from) {
+  if (!to || !from) {
+    return;
+  }
+  from.forEach((r, i) => {
+    if (to[i]) {
+      Object.defineProperty(to[i], '__ruleNames', {
+        value: r.__ruleNames,
+      });
+      cloneRuleNames(to[i].oneOf, r.oneOf);
+    }
+  });
 }
 module.exports = class Service {
   constructor(context) {
@@ -55,31 +62,20 @@ module.exports = class Service {
     this.webpackRawConfigFns = [];
     this.devServerConfigFns = [];
     this.commands = {};
+    this.pkgContext = context;
     this.pkg = this.resolvePkg(); //  没有则读取执行路径的package.json
 
-    // this.loadEnv();
-
-    // const userOptions = this.loadUserOptions();
-    // this.projectOptions = defaultsDeep(userOptions, defaults());
-
-    // debug('vue:project-config')(this.projectOptions);
     /**
      * 安装插件。
      *如果有内联插件，将使用它们而不是package.json中的那些插件。
      *当useBuiltIn === false时，内置插件被禁用。 这主要是为了测试。
      */
     this.plugins = this.resolvePlugins();
-    // this.plugins.forEach(({
-    //   id,
-    //   apply,
-    // }) => {
-    //   apply(new PluginAPI(id, this), this.projectOptions);
-    // });
-    this.modes = this.plugins.reduce((modes, {
-      apply: {
-        defaultModes,
-      },
-    }) => Object.assign(modes, defaultModes), {});
+
+    this.modes = this.plugins.reduce(
+      (modes, { apply: { defaultModes } }) => Object.assign(modes, defaultModes),
+      {},
+    );
   }
 
   /**
@@ -91,9 +87,8 @@ module.exports = class Service {
   async run(name, args = {}, rawArgv = []) {
     // resolve mode
     // prioritize inline --mode
-    // fallback to resolved default modes from plugins
-    // 优先使用指定环境，否则使用插件注册时的指定环境原先
-    const mode = args.mode || this.modes[name];
+    // 优先使用指定环境，否则使用插件注册时的指定环境
+    const mode = args.mode || (name === 'build' && args.watch ? 'development' : this.modes[name]);
 
     // 加载Env变量，加载用户配置，应用插件
     this.init(mode);
@@ -110,9 +105,7 @@ module.exports = class Service {
       args._.shift(); // remove command itself
       rawArgv.shift();
     }
-    const {
-      fn,
-    } = command;
+    const { fn } = command;
     /**
      * command:'serve',
      * args:{_:['serve'],open:true}
@@ -128,12 +121,12 @@ module.exports = class Service {
     this.initialized = true;
     this.mode = mode;
 
-    // load base .env
-    this.loadEnv();
     // load mode .env
     if (mode) {
       this.loadEnv(mode);
     }
+    // load base .env
+    this.loadEnv();
 
     // 读取 fuc.config.js 并 合并默认配置
     const userOptions = this.loadUserOptions();
@@ -142,10 +135,7 @@ module.exports = class Service {
     debug('vue:project-config')(this.projectOptions);
 
     // apply plugins.
-    this.plugins.forEach(({
-      id,
-      apply,
-    }) => {
+    this.plugins.forEach(({ id, apply }) => {
       apply(new PluginAPI(id, this), this.projectOptions);
     });
 
@@ -185,7 +175,7 @@ module.exports = class Service {
       './config/prod',
       './config/app',
       './config/babel',
-      './config/typescript',
+      // './config/typescript',
       './config/eslint',
     ].map(idToPlugin);
 
@@ -225,9 +215,19 @@ module.exports = class Service {
       resovledFrom = 'inline options';
     }
 
-    // normlaize some options
+    // normalize some options
     ensureSlash(resolved, 'baseUrl');
+    if (typeof resolved.baseUrl === 'string') {
+      // 去掉./
+      resolved.baseUrl = resolved.baseUrl.replace(/^\.\//, '');
+    }
     removeSlash(resolved, 'outputDir');
+
+    // TODO: 临时方案
+    if (resolved.css && resolved.css.localIdentName) {
+      warn('css.localIdentName has been deprecated. ' +
+          'All css-loader options (except "modules") are now supported via css.loaderOptions.css.');
+    }
 
     // validate options
     validate(resolved, (msg) => {
@@ -237,23 +237,16 @@ module.exports = class Service {
     return resolved;
   }
 
-  resolvePkg() {
+  resolvePkg(context = this.context) {
     if (fs.existsSync(path.join(this.context, 'package.json'))) {
-      return readPkg.sync(this.context);
+      return readPkg.sync({
+        cwd: context,
+      });
     }
     return {};
   }
 
   loadEnv(mode) {
-    if (mode) {
-      // by default, NODE_ENV and BABEL_ENV are set to "development" unless mode
-      // is production or test. However this can be overwritten in .env files.
-      process.env.BABEL_ENV = (mode === 'production' || mode === 'test')
-        ? mode
-        : 'development';
-      process.env.NODE_ENV = process.env.BABEL_ENV;
-    }
-
     const logger = debug('vue:env');
     const basePath = path.resolve(this.context, `.env${mode ? `.${mode}` : ''}`);
     const localPath = `${basePath}.local`;
@@ -270,8 +263,15 @@ module.exports = class Service {
       }
     };
 
-    load(basePath);
     load(localPath);
+    load(basePath);
+
+    if (mode) {
+      // by default, NODE_ENV and BABEL_ENV are set to "development" unless mode
+      // is production or test. However this can be overwritten in .env files.
+      process.env.BABEL_ENV = mode === 'production' || mode === 'test' ? mode : 'development';
+      process.env.NODE_ENV = process.env.BABEL_ENV;
+    }
   }
 
   resolveChainableWebpackConfig() {
@@ -287,6 +287,7 @@ module.exports = class Service {
     }
     // get raw config
     let config = chainableConfig.toConfig();
+    const original = config;
     // apply raw config fns
     this.webpackRawConfigFns.forEach((fn) => {
       if (typeof fn === 'function') {
@@ -298,6 +299,20 @@ module.exports = class Service {
         config = merge(config, fn);
       }
     });
+
+    // #2206 If config is merged by merge-webpack, it discards the __ruleNames
+    // information injected by webpack-chain. Restore the info so that
+    // vue inspect works properly.
+    if (config !== original) {
+      cloneRuleNames(
+        config.module && config.module.rules,
+        original.module && original.module.rules,
+      );
+    }
+    if (config.output.publicPath !== this.projectOptions.baseUrl) {
+      throw new Error('Do not modify webpack output.publicPath directly. ' +
+          'Use the "baseUrl" option in vue.config.js instead.');
+    }
     return config;
   }
 };

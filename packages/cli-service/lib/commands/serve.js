@@ -1,7 +1,8 @@
 const {
   info,
-  hasYarn,
+  hasProjectYarn,
   openBrowser,
+  IpcMessenger
 } = require('fuc-cli-utils');
 
 const defaults = {
@@ -29,6 +30,14 @@ function addDevClientToEntry(config, devClient) {
     config.entry = devClient.concat(entry); // eslint-disable-line no-param-reassign
   }
 }
+// https://stackoverflow.com/a/20012536
+function checkInContainer() {
+  const fs = require('fs')
+  if (fs.existsSync(`/proc/1/cgroup`)) {
+    const content = fs.readFileSync(`/proc/1/cgroup`, 'utf-8')
+    return /:\/(lxc|docker)\//.test(content)
+  }
+}
 /**
  *
  * @param {PluginAPI} api
@@ -39,32 +48,45 @@ module.exports = (api, options) => {
     description: 'start development server',
     usage: 'fuc-cli-service serve [options] [entry]',
     options: {
-      '--open': 'open browser on server start',
-      '--mode': 'specify env mode (default: development)',
+      '--open': `open browser on server start`,
+      '--copy': `copy url to clipboard on server start`,
+      '--mode': `specify env mode (default: development)`,
       '--host': `specify host (default: ${defaults.host})`,
       '--port': `specify port (default: ${defaults.port})`,
       '--https': `use https (default: ${defaults.https})`,
-    },
+      '--public': `specify the public network URL for the HMR client`
+    }
   }, async (args) => {
     info('Starting development server...');
 
     // although this is primarily a dev server, it is possible that we
     // are running it in a mode with a production env, e.g. in E2E tests.
+    const isInContainer = checkInContainer()
     const isProduction = process.env.NODE_ENV === 'production';
 
-    const chalk = require('chalk');
-    const webpack = require('webpack');
-    const WebpackDevServer = require('webpack-dev-server');
-    const portfinder = require('portfinder');
-    const prepareURLs = require('../util/prepareURLs');
-    const prepareProxy = require('../util/prepareProxy');
-    const launchEditorMiddleware = require('launch-editor-middleware');
+    const url = require('url')
+    const path = require('path')
+    const chalk = require('chalk')
+    const webpack = require('webpack')
+    const WebpackDevServer = require('webpack-dev-server')
+    const portfinder = require('portfinder')
+    const prepareURLs = require('../util/prepareURLs')
+    const prepareProxy = require('../util/prepareProxy')
+    const launchEditorMiddleware = require('launch-editor-middleware')
+    const validateWebpackConfig = require('../util/validateWebpackConfig')
 
-    // load user devServer options
-    const projectDevServerOptions = options.devServer || {};
+    // resolve webpack config
+    const webpackConfig = api.resolveWebpackConfig()
 
-    // 解析用户webpack配置
-    const webpackConfig = api.resolveWebpackConfig();
+    // check for common config errors
+    validateWebpackConfig(webpackConfig, api, options)
+
+    // load user devServer options with higher priority than devServer
+    // in webpck config
+    const projectDevServerOptions = Object.assign(
+      webpackConfig.devServer || {},
+      options.devServer
+    )
 
     const entry = args._[0];
     if (entry) {
