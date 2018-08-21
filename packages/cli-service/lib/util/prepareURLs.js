@@ -10,26 +10,26 @@ const url = require('url');
 const chalk = require('chalk');
 const address = require('address');
 
-module.exports = function prepareUrls(protocol, host, port) {
+module.exports = function prepareUrls(protocol, host, port, pathname = '/') {
   const formatUrl = hostname =>
     url.format({
       protocol,
       hostname,
       port,
-      pathname: '/',
+      pathname,
     });
   const prettyPrintUrl = hostname =>
     url.format({
       protocol,
       hostname,
       port: chalk.bold(port),
-      pathname: '/',
+      pathname,
     });
 
   const isUnspecifiedHost = host === '0.0.0.0' || host === '::';
   let prettyHost;
   let lanUrlForConfig;
-  let lanUrlForTerminal;
+  let lanUrlForTerminal = chalk.gray('unavailable');
   if (isUnspecifiedHost) {
     prettyHost = 'localhost';
     try {

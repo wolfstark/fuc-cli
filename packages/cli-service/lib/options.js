@@ -28,15 +28,15 @@ const schema = createSchema(joi => joi.object({
       sass: joi.object(),
       less: joi.object(),
       stylus: joi.object(),
-      postcss: joi.object()
-    })
+      postcss: joi.object(),
+    }),
   }),
 
   // webpack
   chainWebpack: joi.func(),
   configureWebpack: joi.alternatives().try(
     joi.object(),
-    joi.func()
+    joi.func(),
   ),
 
   // known runtime options for built-in plugins
@@ -44,21 +44,21 @@ const schema = createSchema(joi => joi.object({
   pwa: joi.object(),
 
   // 3rd party plugin options
-  pluginOptions: joi.object()
-}))
+  pluginOptions: joi.object(),
+}));
 
 exports.validate = (options, cb) => {
-  validate(options, schema, cb)
-}
+  validate(options, schema, cb);
+};
 
 // #2110
 // https://github.com/nodejs/node/issues/19022
 // in some cases cpus() returns undefined, and may simply throw in the future
 function hasMultipleCores() {
   try {
-    return require('os').cpus().length > 1
+    return require('os').cpus().length > 1;
   } catch (e) {
-    return false
+    return false;
   }
 }
 
@@ -82,7 +82,7 @@ exports.defaults = () => ({
   runtimeCompiler: false,
 
   // deps to transpile
-  transpileDependencies: [ /* string or regex */ ],
+  transpileDependencies: [],
 
   // sourceMap for production build?
   productionSourceMap: !process.env.VUE_CLI_TEST,
@@ -122,5 +122,5 @@ exports.defaults = () => ({
       proxy: null, // string | Object
       before: app => {}
     */
-  }
-})
+  },
+});

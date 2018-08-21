@@ -5,7 +5,7 @@
  * LICENSE file at
  * https://github.com/facebookincubator/create-react-app/blob/master/LICENSE
  */
-
+/* eslint-disable */
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
@@ -18,6 +18,94 @@ const defaultConfig = {
   changeOrigin: true,
   ws: true,
   xfwd: true,
+};
+
+module.exports = function prepareProxy(proxy, appPublicFolder) {
+  // `proxy` lets you specify alternate servers for specific requests.
+  // It can either be a string or an object conforming to the Webpack dev server proxy configuration
+  // https://webpack.github.io/docs/webpack-dev-server.html
+  if (!proxy) {
+    return undefined;
+  }
+  if (typeof proxy !== 'object' && typeof proxy !== 'string') {
+    console.log(chalk.red('When specified, "proxy" in package.json must be a string or an object.'));
+    console.log(chalk.red(`Instead, the type of "proxy" was "${typeof proxy}".`));
+    console.log(chalk.red('Either remove "proxy" from package.json, or make it an object.'));
+    process.exit(1);
+  }
+
+  // Otherwise, if proxy is specified, we will let it handle any request except for files in the public folder.
+  function mayProxy(pathname) {
+    const maybePublicPath = path.resolve(appPublicFolder, pathname.slice(1));
+    return !fs.existsSync(maybePublicPath);
+  }
+
+  function createProxyEntry(target, usersOnProxyReq, context) {
+    if (process.platform === 'win32') {
+      target = resolveLoopback(target);
+    }
+    return {
+      target,
+      context(pathname, req) {
+        // is a static asset
+        if (!mayProxy(pathname)) {
+          return false;
+        }
+        if (context) {
+          // Explicit context, e.g. /api
+          return pathname.match(context);
+        }
+        // not a static request
+        if (req.method !== 'GET') {
+          return true;
+        }
+        // Heuristics: if request `accept`s text/html, we pick /index.html.
+        // Modern browsers include text/html into `accept` header when navigating.
+        // However API calls like `fetch()` won’t generally accept text/html.
+        // If this heuristic doesn’t work well for you, use a custom `proxy` object.
+        return (
+          req.headers.accept &&
+            req.headers.accept.indexOf('text/html') === -1
+        );
+      },
+      onProxyReq(proxyReq, req, res) {
+        if (usersOnProxyReq) {
+          usersOnProxyReq(proxyReq, req, res);
+        }
+        // Browsers may send Origin headers even with same-origin
+        // requests. To prevent CORS issues, we have to change
+        // the Origin to match the target URL.
+        if (!proxyReq.agent && proxyReq.getHeader('origin')) {
+          proxyReq.setHeader('origin', target);
+        }
+      },
+      onError: onProxyError(target),
+    };
+  }
+
+  // Support proxy as a string for those who are using the simple proxy option
+  if (typeof proxy === 'string') {
+    if (!/^http(s)?:\/\//.test(proxy)) {
+      console.log(chalk.red('When "proxy" is specified in package.json it must start with either http:// or https://'));
+      process.exit(1);
+    }
+
+    return [
+      Object.assign({}, defaultConfig, createProxyEntry(proxy)),
+    ];
+  }
+
+  // Otherwise, proxy is an object so create an array of proxies to pass to webpackDevServer
+  return Object.keys(proxy).map((context) => {
+    const config = proxy[context];
+    if (!config.hasOwnProperty('target')) {
+      console.log(chalk.red('When `proxy` in package.json is as an object, each `context` object must have a ' +
+            '`target` property specified as a url string'));
+      process.exit(1);
+    }
+    const entry = createProxyEntry(config.target, config.onProxyReq, context);
+    return Object.assign({}, defaultConfig, config, entry);
+  });
 };
 
 function resolveLoopback(proxy) {
@@ -48,6 +136,7 @@ function resolveLoopback(proxy) {
   }
   return url.format(o);
 }
+
 // We need to provide a custom onError function for httpProxyMiddleware.
 // It allows us to log custom error messages on the console.
 function onProxyError(proxy) {
@@ -82,92 +171,3 @@ function onProxyError(proxy) {
     }).`);
   };
 }
-
-module.exports = function prepareProxy(proxy, appPublicFolder) {
-  // `proxy` lets you specify alternate servers for specific requests.
-  // It can either be a string or an object conforming to the Webpack dev server proxy configuration
-  // https://webpack.github.io/docs/webpack-dev-server.html
-  if (!proxy) {
-    return undefined;
-  }
-  if (typeof proxy !== 'object' && typeof proxy !== 'string') {
-    console.log(chalk.red('When specified, "proxy" in package.json must be a string or an object.'));
-    console.log(chalk.red(`Instead, the type of "proxy" was "${typeof proxy}".`));
-    console.log(chalk.red('Either remove "proxy" from package.json, or make it an object.'));
-    process.exit(1);
-  }
-
-  // Otherwise, if proxy is specified,
-  // we will let it handle any request except for files in the public folder.
-  function mayProxy(pathname) {
-    const maybePublicPath = path.resolve(appPublicFolder, pathname.slice(1));
-    return !fs.existsSync(maybePublicPath);
-  }
-
-  function createProxyEntry(target, usersOnProxyReq, context) {
-    if (process.platform === 'win32') {
-      target = resolveLoopback(target); // eslint-disable-line no-param-reassign
-    }
-    return {
-      target,
-      context(pathname, req) {
-        // is a static asset
-        if (!mayProxy(pathname)) {
-          return false;
-        }
-        if (context) {
-          // Explicit context, e.g. /api
-          return pathname.match(context);
-        }
-        // not a static request
-        if (req.method !== 'GET') {
-          return true;
-        }
-        // Heuristics: if request `accept`s text/html, we pick /index.html.
-        // Modern browsers include text/html into `accept` header when navigating.
-        // However API calls like `fetch()` won’t generally accept text/html.
-        // If this heuristic doesn’t work well for you, use a custom `proxy` object.
-        return (
-          req.headers.accept &&
-          req.headers.accept.indexOf('text/html') === -1
-        );
-      },
-      onProxyReq(proxyReq, req, res) {
-        if (usersOnProxyReq) {
-          usersOnProxyReq(proxyReq, req, res);
-        }
-        // Browsers may send Origin headers even with same-origin
-        // requests. To prevent CORS issues, we have to change
-        // the Origin to match the target URL.
-        if (!proxyReq.agent && proxyReq.getHeader('origin')) {
-          proxyReq.setHeader('origin', target);
-        }
-      },
-      onError: onProxyError(target),
-    };
-  }
-
-  // Support proxy as a string for those who are using the simple proxy option
-  if (typeof proxy === 'string') {
-    if (!/^http(s)?:\/\//.test(proxy)) {
-      console.log(chalk.red('When "proxy" is specified in package.json it must start with either http:// or https://'));
-      process.exit(1);
-    }
-
-    return [
-      Object.assign({}, defaultConfig, createProxyEntry(proxy)),
-    ];
-  }
-
-  // Otherwise, proxy is an object so create an array of proxies to pass to webpackDevServer
-  return Object.keys(proxy).map((context) => {
-    const config = proxy[context];
-    if (!Object.prototype.hasOwnProperty.call(config, 'target')) {
-      console.log(chalk.red('When `proxy` in package.json is as an object, each `context` object must have a ' +
-        '`target` property specified as a url string'));
-      process.exit(1);
-    }
-    const entry = createProxyEntry(config.target, config.onProxyReq, context);
-    return Object.assign({}, defaultConfig, config, entry);
-  });
-};
