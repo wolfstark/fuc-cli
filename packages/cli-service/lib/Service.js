@@ -8,9 +8,16 @@ const Config = require('webpack-chain');
 const defaultsDeep = require('lodash.defaultsdeep');
 const PluginAPI = require('./PluginAPI');
 const loadEnvConst = require('./util/loadEnvConst');
-const { error, warn, isPlugin } = require('fuc-cli-utils');
+const {
+  error,
+  warn,
+  isPlugin,
+} = require('fuc-cli-utils');
 
-const { defaults, validate } = require('./options');
+const {
+  defaults,
+  validate,
+} = require('./options');
 /**
  * @example
  *foo/fun -> /foo/fun/
@@ -55,7 +62,7 @@ function cloneRuleNames(to, from) {
 }
 module.exports = class Service {
   constructor(context) {
-    process.FUC_CLI_SERVICE = this;
+    process.VUE_CLI_SERVICE = this;
     this.initialized = false;
     this.context = context;
     this.webpackChainFns = [];
@@ -72,10 +79,11 @@ module.exports = class Service {
      */
     this.plugins = this.resolvePlugins();
 
-    this.modes = this.plugins.reduce(
-      (modes, { apply: { defaultModes } }) => Object.assign(modes, defaultModes),
-      {},
-    );
+    this.modes = this.plugins.reduce((modes, {
+      apply: {
+        defaultModes,
+      },
+    }) => Object.assign(modes, defaultModes), {});
   }
 
   /**
@@ -105,7 +113,9 @@ module.exports = class Service {
       args._.shift(); // remove command itself
       rawArgv.shift();
     }
-    const { fn } = command;
+    const {
+      fn,
+    } = command;
     /**
      * command:'serve',
      * args:{_:['serve'],open:true}
@@ -114,7 +124,7 @@ module.exports = class Service {
     return fn(args, rawArgv);
   }
 
-  init(mode = process.env.FUC_CLI_MODE) {
+  init(mode = process.env.VUE_CLI_MODE) {
     if (this.initialized) {
       return;
     }
@@ -135,7 +145,10 @@ module.exports = class Service {
     debug('vue:project-config')(this.projectOptions);
 
     // apply plugins.
-    this.plugins.forEach(({ id, apply }) => {
+    this.plugins.forEach(({
+      id,
+      apply,
+    }) => {
       apply(new PluginAPI(id, this), this.projectOptions);
     });
 
@@ -166,8 +179,8 @@ module.exports = class Service {
     const builtInPlugins = [
       './commands/serve',
       './commands/build',
-      // './commands/inspect',
-      // './commands/help',
+      './commands/inspect',
+      './commands/help',
       // config plugins are order sensitive
       './config/base',
       './config/css',
@@ -177,6 +190,7 @@ module.exports = class Service {
       './config/babel',
       // './config/typescript',
       './config/eslint',
+      './config/pwa',
     ].map(idToPlugin);
 
     const projectPlugins = Object.keys(this.pkg.dependencies || {})
@@ -226,7 +240,7 @@ module.exports = class Service {
     // TODO: 临时方案
     if (resolved.css && resolved.css.localIdentName) {
       warn('css.localIdentName has been deprecated. ' +
-          'All css-loader options (except "modules") are now supported via css.loaderOptions.css.');
+        'All css-loader options (except "modules") are now supported via css.loaderOptions.css.');
     }
 
     // validate options
@@ -311,7 +325,7 @@ module.exports = class Service {
     }
     if (config.output.publicPath !== this.projectOptions.baseUrl) {
       throw new Error('Do not modify webpack output.publicPath directly. ' +
-          'Use the "baseUrl" option in vue.config.js instead.');
+        'Use the "baseUrl" option in vue.config.js instead.');
     }
     return config;
   }

@@ -1,7 +1,8 @@
 import '@/main.js';
 import Vue from 'vue';
-import App from '@/{{{routePath}}}';
+import Page from '@/{{{routePath}}}';
+import App from '@/App.vue'
 
 new Vue({
-  render: h => h(App),
+  render: h => h(App, [h(Page)]),
 }).$mount('#app');

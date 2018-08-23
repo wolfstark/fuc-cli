@@ -14,18 +14,15 @@ function ensureRelative(outputDir, _path) {
 }
 
 module.exports = (api, options) => {
-  function getTemplatePath(_path) {
-    return path.join(__dirname, '../../temp', _path);
-  }
+  const entryTplPath = path.join(__dirname, '../../temp', 'entry.js.tpl');
+  const entryTpl = fs.readFileSync(entryTplPath, 'utf-8');
 
   function getPagesPath(_path) {
-    return path.join(api.resolve('.'), './.fuc/entries', _path);
+    return path.join(api.resolve('.'), './node_modules/.entries', _path);
   }
 
   // mustache.render();
   function generatorEntry(routeConfig = []) {
-    const entryTplPath = getTemplatePath('entry.js.tpl');
-    const entryTpl = fs.readFileSync(entryTplPath, 'utf-8');
     const pages = {};
 
 
@@ -181,6 +178,7 @@ module.exports = (api, options) => {
     const defaultHtmlPath = path.resolve(__dirname, 'index-default.html');
     const publicCopyIgnore = ['index.html', '.DS_Store'];
 
+    console.log(multiPageConfig);
     // wran:当前总是多页
     if (!multiPageConfig) {
       // default, single page setup.
