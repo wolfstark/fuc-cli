@@ -1,42 +1,25 @@
-function genCacheIdentifier(context) {
-  const fs = require('fs');
-  const path = require('path');
-  const files = [
-    '.eslintrc.js',
-    '.eslintrc.yaml',
-    '.eslintrc.yml',
-    '.eslintrc.json',
-    '.eslintrc',
-    'package.json',
-  ];
-
-  const configTimeStamp = (() => {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const file of files) {
-      if (fs.existsSync(path.join(context, file))) {
-        // 最有一次修改的时间戳
-        return fs.statSync(file).mtimeMs;
-      }
-    }
-    return undefined;
-  })();
-
-  // 缓存标志，模块版本和配置文件都没有变更则应用缓存
-  return JSON.stringify({
-    'eslint-loader': require('eslint-loader/package.json').version,
-    eslint: require('eslint/package.json').version,
-    config: configTimeStamp,
-  });
-}
-
-
-module.exports = (api, {
-  lintOnSave,
-}) => {
-  if (lintOnSave) {
+module.exports = (api, options) => {
+  if (options.lintOnSave) {
     const extensions = require('./eslintOptions').extensions(api);
-    const cacheIdentifier = genCacheIdentifier(api.resolve('.'));
-    const resolveLocal = require('../../util/resolveLocal');
+
+    // eslint-loader doesn't bust cache when eslint config changes
+    // so we have to manually generate a cache identifier that takes the config
+    // into account.
+    const { cacheIdentifier } = api.genCacheConfig(
+      'eslint-loader',
+      {
+        'eslint-loader': require('eslint-loader/package.json').version,
+        eslint: require('eslint/package.json').version,
+      },
+      [
+        '.eslintrc.js',
+        '.eslintrc.yaml',
+        '.eslintrc.yml',
+        '.eslintrc.json',
+        '.eslintrc',
+        'package.json',
+      ],
+    );
 
     api.chainWebpack((webpackConfig) => {
       webpackConfig.module
@@ -44,8 +27,7 @@ module.exports = (api, {
         .pre()
         .exclude
         .add(/node_modules/)
-        .add(resolveLocal('lib'))
-        // .add(require('path').dirname(require.resolve('fuc-cli-service')))
+        .add(require('path').dirname(require.resolve('fuc-cli-service')))
         .end()
         .test(/\.(vue|(j|t)sx?)$/)
         .use('eslint-loader')
@@ -54,7 +36,8 @@ module.exports = (api, {
           extensions,
           cache: true,
           cacheIdentifier,
-          emitWarning: lintOnSave !== 'error',
+          emitWarning: options.lintOnSave !== 'error',
+          emitError: options.lintOnSave === 'error',
           formatter: require('eslint/lib/formatters/codeframe'),
         });
     });
@@ -62,7 +45,7 @@ module.exports = (api, {
 
   api.registerCommand('lint', {
     description: 'lint and fix source files',
-    usage: 'fuc-cli-service lint [options] [...files]',
+    usage: 'vue-cli-service lint [options] [...files]',
     options: {
       '--format [formatter]': 'specify formatter (default: codeframe)',
       '--no-fix': 'do not fix errors',
@@ -74,7 +57,3 @@ module.exports = (api, {
     require('./lint')(args, api);
   });
 };
-
-// eslint-loader doesn't bust cache when eslint config changes
-// so we have to manually generate a cache identifier that takes the config
-// into account.

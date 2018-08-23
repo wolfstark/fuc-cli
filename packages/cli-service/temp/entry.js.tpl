@@ -1,4 +1,4 @@
-import '@/main.ts';
+import '@/main.js';
 import Vue from 'vue';
 import App from '@/{{{routePath}}}';
 

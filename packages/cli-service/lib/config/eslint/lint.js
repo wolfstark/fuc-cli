@@ -21,7 +21,6 @@ function camelize(str) {
 
 function normalizeConfig(args) {
   const config = {};
-
   Object.keys(args).forEach((key) => {
     if (renamedArrayArgs[key]) {
       config[renamedArrayArgs[key]] = args[key].split(',');
@@ -33,9 +32,9 @@ function normalizeConfig(args) {
   });
   return config;
 }
+
 module.exports = function lint(args = {}, api) {
   const path = require('path');
-  const chalk = require('chalk');
   const cwd = api.resolve('.');
   const {
     CLIEngine,
@@ -43,9 +42,11 @@ module.exports = function lint(args = {}, api) {
   const {
     log,
     done,
+    exit,
+    chalk,
   } = require('fuc-cli-utils');
 
-  const files = args._ && args._.length ? args._ : ['src', 'tests', '*.js'];
+  const files = args._ && args._.length ? args._ : ['src', 'tests', '*.js', '.*.js'];
   const extensions = require('./eslintOptions').extensions(api);
   const argsConfig = normalizeConfig(args);
   const config = Object.assign({
@@ -67,21 +68,23 @@ module.exports = function lint(args = {}, api) {
   const isWarningsExceeded = report.warningCount > maxWarnings;
 
   if (!isErrorsExceeded && !isWarningsExceeded) {
-    const hasFixed = report.results.some(f => f.output);
-    if (hasFixed) {
-      log('The following files have been auto-fixed:');
-      log();
-      report.results.forEach((f) => {
-        if (f.output) {
-          log(`  ${chalk.blue(path.relative(cwd, f.filePath))}`);
-        }
-      });
-      log();
-    }
-    if (report.warningCount || report.errorCount) {
-      console.log(formatter(report.results));
-    } else {
-      done(hasFixed ? 'All lint errors auto-fixed.' : 'No lint errors found!');
+    if (!args.silent) {
+      const hasFixed = report.results.some(f => f.output);
+      if (hasFixed) {
+        log('The following files have been auto-fixed:');
+        log();
+        report.results.forEach((f) => {
+          if (f.output) {
+            log(`  ${chalk.blue(path.relative(cwd, f.filePath))}`);
+          }
+        });
+        log();
+      }
+      if (report.warningCount || report.errorCount) {
+        console.log(formatter(report.results));
+      } else {
+        done(hasFixed ? 'All lint errors auto-fixed.' : 'No lint errors found!');
+      }
     }
   } else {
     console.log(formatter(report.results));
@@ -91,6 +94,6 @@ module.exports = function lint(args = {}, api) {
     if (isWarningsExceeded) {
       log(`Eslint found too many warnings (maximum: ${argsConfig.maxWarnings}).`);
     }
-    process.exit(1);
+    exit(1);
   }
 };
