@@ -1,7 +1,8 @@
 module.exports = options => ({
   uglifyOptions: {
     compress: {
-      // 关闭一些微小的获益来获取压缩速度的提升
+      // 关闭一些微小的收益来获取压缩速度的提升
+      arrows: false,
       collapse_vars: false, // 0.3kb
       comparisons: false,
       computed_props: false,

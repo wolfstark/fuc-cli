@@ -1,21 +1,39 @@
 module.exports = (api, options) => {
   api.chainWebpack((webpackConfig) => {
+    const isLegacyBundle = process.env.VUE_CLI_MODERN_MODE && !process.env.VUE_CLI_MODERN_BUILD;
     const resolveLocal = require('../util/resolveLocal');
     const getAssetPath = require('../util/getAssetPath');
-    const inlineLimit = 10000;
+    const inlineLimit = 4096;
+
+    const genAssetSubPath = dir => getAssetPath(
+      options,
+      `${dir}/[name]${options.filenameHashing ? '.[hash:8]' : ''}.[ext]`,
+    );
+
+    const genUrlLoaderOptions = dir => ({
+      limit: inlineLimit,
+      // url-loader>=1.1.0 fallback使用object
+      fallback: {
+        loader: 'file-loader',
+        options: {
+          name: genAssetSubPath(dir),
+        },
+      },
+    });
 
     webpackConfig
+      .mode('development')
       .context(api.service.context)
       .entry('app')
       .add('./src/main.js')
       .end()
       .output
       .path(api.resolve(options.outputDir))
-      .filename('[name].js')
+      .filename(isLegacyBundle ? '[name]-legacy.js' : '[name].js')
       .publicPath(options.baseUrl);
 
     webpackConfig.resolve
-      .set('symlinks', true)
+      .set('symlinks', false)
       .extensions
       .merge(['.js', '.jsx', '.vue', '.json'])
       .end()
@@ -26,10 +44,14 @@ module.exports = (api, options) => {
       .end()
       .alias
       .set('@', api.resolve('src'))
-      .set('vue$', options.compiler ? 'vue/dist/vue.esm.js' : 'vue/dist/vue.runtime.esm.js');
+      .set(
+        'vue$',
+        options.runtimeCompiler ?
+          'vue/dist/vue.esm.js' :
+          'vue/dist/vue.runtime.esm.js',
+      );
 
     webpackConfig.resolveLoader
-      // .set('symlinks', true)
       .modules
       .add('node_modules')
       .add(api.resolve('node_modules'))
@@ -38,20 +60,30 @@ module.exports = (api, options) => {
     webpackConfig.module
       .noParse(/^(vue|vue-router|vuex|vuex-router-sync)$/);
 
-    // js is handled by cli-plugin-bable ---------------------------------------
+    // js is handled by cli-plugin-babel ---------------------------------------
 
     // vue-loader --------------------------------------------------------------
+    const vueLoaderCacheConfig = api.genCacheConfig('vue-loader', {
+      'vue-loader': require('vue-loader/package.json').version,
+      /* eslint-disable-next-line node/no-extraneous-require */
+      '@vue/component-compiler-utils': require('@vue/component-compiler-utils/package.json').version,
+      'vue-template-compiler': require('vue-template-compiler/package.json').version,
+    });
 
     webpackConfig.module
       .rule('vue')
       .test(/\.vue$/)
+      .use('cache-loader')
+      .loader('cache-loader')
+      .options(vueLoaderCacheConfig)
+      .end()
       .use('vue-loader')
       .loader('vue-loader')
-      .options({
+      .options(Object.assign({
         compilerOptions: {
           preserveWhitespace: false,
         },
-      });
+      }, vueLoaderCacheConfig));
 
     webpackConfig
       .plugin('vue-loader')
@@ -64,10 +96,7 @@ module.exports = (api, options) => {
       .test(/\.(png|jpe?g|gif|webp)(\?.*)?$/)
       .use('url-loader')
       .loader('url-loader')
-      .options({
-        limit: inlineLimit,
-        name: getAssetPath(options, 'img/[name].[hash:8].[ext]'),
-      });
+      .options(genUrlLoaderOptions('img'));
 
     // do not base64-inline SVGs.
     // https://github.com/facebookincubator/create-react-app/pull/1180
@@ -77,7 +106,7 @@ module.exports = (api, options) => {
       .use('file-loader')
       .loader('file-loader')
       .options({
-        name: getAssetPath(options, 'img/[name].[hash:8].[ext]'),
+        name: genAssetSubPath('img'),
       });
 
     webpackConfig.module
@@ -85,20 +114,14 @@ module.exports = (api, options) => {
       .test(/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/)
       .use('url-loader')
       .loader('url-loader')
-      .options({
-        limit: inlineLimit,
-        name: getAssetPath(options, 'media/[name].[hash:8].[ext]'),
-      });
+      .options(genUrlLoaderOptions('media'));
 
     webpackConfig.module
       .rule('fonts')
       .test(/\.(woff2?|eot|ttf|otf)(\?.*)?$/i)
       .use('url-loader')
       .loader('url-loader')
-      .options({
-        limit: inlineLimit,
-        name: getAssetPath(options, 'fonts/[name].[hash:8].[ext]'),
-      });
+      .options(genUrlLoaderOptions('fonts'));
 
     // Other common pre-processors ---------------------------------------------
 
@@ -109,8 +132,7 @@ module.exports = (api, options) => {
       .loader('pug-plain-loader')
       .end();
 
-    // shims
-
+    // node在前端文件中的shims，除了process，通常无用
     webpackConfig.node
       .merge({
         // prevent webpack from injecting useless setImmediate polyfill because Vue
@@ -132,7 +154,7 @@ module.exports = (api, options) => {
     webpackConfig
       .plugin('define')
       .use(require('webpack/lib/DefinePlugin'), [
-        resolveClientEnv(options.baseUrl),
+        resolveClientEnv(options),
       ]);
 
     webpackConfig

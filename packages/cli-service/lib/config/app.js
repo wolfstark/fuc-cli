@@ -71,6 +71,32 @@ module.exports = (api, options) => {
     // HTML plugin
     const resolveClientEnv = require('../util/resolveClientEnv');
 
+    // #1669 html-webpack-plugin's default sort uses toposort which cannot
+    // handle cyclic deps in certain cases. Monkey patch it to handle the case
+    // before we can upgrade to its 4.0 version (incompatible with preload atm)
+    const chunkSorters = require('html-webpack-plugin/lib/chunksorter');
+    const depSort = chunkSorters.dependency;
+    chunkSorters.dependency = (chunks, ...args) => {
+      try {
+        return depSort(chunks, ...args);
+      } catch (e) {
+        // fallback to a manual sort if that happens...
+        return chunks.sort((a, b) => {
+          // make sure user entry is loaded last so user CSS can override
+          // vendor CSS
+          if (a.id === 'app') {
+            return 1;
+          } else if (b.id === 'app') {
+            return -1;
+          } else if (a.entry !== b.entry) {
+            return b.entry ? -1 : 1;
+          }
+          return 0;
+        });
+      }
+    };
+    chunkSorters.auto = chunkSorters.dependency;
+
     const htmlOptions = {
       templateParameters: (compilation, assets, pluginOptions) => {
         // enhance html-webpack-plugin's built in template params
@@ -91,11 +117,21 @@ module.exports = (api, options) => {
       },
     };
 
-    if (options.indexPath) {
-      htmlOptions.filename = ensureRelative(outputDir, options.indexPath);
-    }
 
     if (isProd) {
+      // handle indexPath
+      if (options.indexPath !== 'index.html') {
+        // why not set filename for html-webpack-plugin?
+        // 1. It cannot handle absolute paths
+        // 2. Relative paths causes incorrect SW manifest to be generated (#2007)
+        webpackConfig
+          .plugin('move-index')
+          .use(require('../webpack/MovePlugin'), [
+            path.resolve(outputDir, 'index.html'),
+            path.resolve(outputDir, options.indexPath),
+          ]);
+      }
+
       Object.assign(htmlOptions, {
         minify: {
           removeComments: true,
@@ -105,17 +141,6 @@ module.exports = (api, options) => {
           removeScriptTypeAttributes: true,
           // more options:
           // https://github.com/kangax/html-minifier#options-quick-reference
-        },
-        // #1669 default sort mode uses toposort which cannot handle cyclic deps
-        // in certain cases, and in webpack 4, chunk order in HTML doesn't
-        // matter anyway
-        chunksSortMode: (a, b) => {
-          if (a.entry !== b.entry) {
-            // make sure entry is loaded last so user CSS can override
-            // vendor CSS
-            return b.entry ? -1 : 1;
-          }
-          return 0;
         },
       });
 
@@ -140,7 +165,7 @@ module.exports = (api, options) => {
           return modules[0].id;
         }]);
     }
-
+    /* 获取多页配置 */
     const routeConfig = globby.sync(['src/views/**/index.vue'], {
       cwd: api.resolve('.'),
     }).map(routePath => ({
@@ -154,107 +179,123 @@ module.exports = (api, options) => {
     const multiPageConfig = generatorEntry(routeConfig);
     const htmlPath = api.resolve('public/index.html');
     const defaultHtmlPath = path.resolve(__dirname, 'index-default.html');
+    const publicCopyIgnore = ['index.html', '.DS_Store'];
 
-    // if (!multiPageConfig) {
-    //   // default, single page setup.
-    //   htmlOptions.template = fs.existsSync(htmlPath) ?
-    //     htmlPath :
-    //     defaultHtmlPath;
-
-    //   webpackConfig
-    //     .plugin('html')
-    //     .use(HTMLPlugin, [htmlOptions]);
-
-    //   if (!isLegacyBundle) {
-    //     // inject preload/prefetch to HTML
-    //     webpackConfig
-    //       .plugin('preload')
-    //       .use(PreloadPlugin, [{
-    //         rel: 'preload',
-    //         include: 'initial',
-    //         fileBlacklist: [/\.map$/, /hot-update\.js$/],
-    //       }]);
-
-    //     webpackConfig
-    //       .plugin('prefetch')
-    //       .use(PreloadPlugin, [{
-    //         rel: 'prefetch',
-    //         include: 'asyncChunks',
-    //       }]);
-    //   }
-    // } else {
-    // multi-page setup
-    webpackConfig.entryPoints.clear();
-
-
-    const pages = Object.keys(multiPageConfig);
-    const normalizePageConfig = c => (typeof c === 'string' ? {
-      entry: c,
-    } : c);
-
-    pages.forEach((name) => {
-      const {
-        title,
-        entry,
-        template = `public/${name}.html`,
-        filename = `${name}.html`,
-        chunks,
-      } = normalizePageConfig(multiPageConfig[name]);
-      // inject entry
-      webpackConfig.entry(name).add(api.resolve(entry));
-
-      let _template;
-      if (fs.existsSync(template)) {
-        _template = template;
-      } else if (fs.existsSync(htmlPath)) {
-        _template = htmlPath;
-      } else {
-        _template = defaultHtmlPath;
-      }
-      // inject html plugin for the page
-      const pageHtmlOptions = Object.assign({}, htmlOptions, {
-        chunks: chunks || ['chunk-vendors', 'chunk-common', name],
-        template: _template,
-        filename: ensureRelative(outputDir, filename),
-        title,
-      });
+    // wran:当前总是多页
+    if (!multiPageConfig) {
+      // default, single page setup.
+      htmlOptions.template = fs.existsSync(htmlPath) ?
+        htmlPath :
+        defaultHtmlPath;
 
       webpackConfig
-        .plugin(`html-${name}`)
-        .use(HTMLPlugin, [pageHtmlOptions]);
-    });
+        .plugin('html')
+        .use(HTMLPlugin, [htmlOptions]);
 
-    if (!isLegacyBundle) {
-      pages.forEach((name) => {
-        const filename = ensureRelative(
-          outputDir,
-          normalizePageConfig(multiPageConfig[name]).filename || `${name}.html`,
-        );
+      if (!isLegacyBundle) {
+        // inject preload/prefetch to HTML
         webpackConfig
-          .plugin(`preload-${name}`)
+          .plugin('preload')
           .use(PreloadPlugin, [{
             rel: 'preload',
-            includeHtmlNames: [filename],
-            include: {
-              type: 'initial',
-              entries: [name],
-            },
+            include: 'initial',
             fileBlacklist: [/\.map$/, /hot-update\.js$/],
           }]);
 
         webpackConfig
-          .plugin(`prefetch-${name}`)
+          .plugin('prefetch')
           .use(PreloadPlugin, [{
             rel: 'prefetch',
-            includeHtmlNames: [filename],
-            include: {
-              type: 'asyncChunks',
-              entries: [name],
-            },
+            include: 'asyncChunks',
           }]);
+      }
+    } else {
+      // multi-page setup
+      webpackConfig.entryPoints.clear();
+
+      const pages = Object.keys(multiPageConfig);
+      const normalizePageConfig = c => (typeof c === 'string' ? {
+        entry: c,
+      } : c);
+
+      pages.forEach((name) => {
+        const {
+          title,
+          entry,
+          template = `public/${name}.html`,
+          filename = `${name}.html`,
+          chunks,
+        } = normalizePageConfig(multiPageConfig[name]);
+        // inject entry
+        webpackConfig.entry(name).add(api.resolve(entry));
+
+        // resolve page index template
+        const hasDedicatedTemplate = fs.existsSync(api.resolve(template));
+        if (hasDedicatedTemplate) {
+          publicCopyIgnore.push(template);
+        }
+        let templatePath;
+        if (hasDedicatedTemplate) {
+          templatePath = template;
+        } else if (fs.existsSync(htmlPath)) {
+          templatePath = htmlPath;
+        } else {
+          templatePath = defaultHtmlPath;
+        }
+        // inject html plugin for the page
+        const pageHtmlOptions = Object.assign({}, htmlOptions, {
+          chunks: chunks || ['chunk-vendors', 'chunk-common', name],
+          template: templatePath,
+          filename: ensureRelative(outputDir, filename),
+          title,
+        });
+
+        webpackConfig
+          .plugin(`html-${name}`)
+          .use(HTMLPlugin, [pageHtmlOptions]);
       });
+
+      if (!isLegacyBundle) {
+        pages.forEach((name) => {
+          const filename = ensureRelative(
+            outputDir,
+            normalizePageConfig(multiPageConfig[name]).filename || `${name}.html`,
+          );
+          webpackConfig
+            .plugin(`preload-${name}`)
+            .use(PreloadPlugin, [{
+              rel: 'preload',
+              includeHtmlNames: [filename],
+              include: {
+                type: 'initial',
+                entries: [name],
+              },
+              fileBlacklist: [/\.map$/, /hot-update\.js$/],
+            }]);
+
+          webpackConfig
+            .plugin(`prefetch-${name}`)
+            .use(PreloadPlugin, [{
+              rel: 'prefetch',
+              includeHtmlNames: [filename],
+              include: {
+                type: 'asyncChunks',
+                entries: [name],
+              },
+            }]);
+        });
+      }
     }
-    // }
+
+    if (options.crossorigin != null || options.integrity) {
+      webpackConfig
+        .plugin('cors')
+        .use(require('../webpack/CorsPlugin'), [{
+          crossorigin: options.crossorigin,
+          integrity: options.integrity,
+          baseUrl: options.baseUrl,
+        }]);
+    }
 
     // copy static assets in public/
     const publicDir = api.resolve('public');
@@ -265,7 +306,7 @@ module.exports = (api, options) => {
           [{
             from: publicDir,
             to: outputDir,
-            ignore: ['index.html', '.DS_Store'],
+            ignore: publicCopyIgnore,
           }],
         ]);
     }

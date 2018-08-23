@@ -136,6 +136,7 @@ class PluginAPI {
     const fs = require('fs');
     const cacheDirectory = this.resolve(`node_modules/.cache/${id}`);
 
+    // 判断是否缓存过期的凭据
     const variables = {
       partialIdentifier,
       'cli-service': require('../package.json').version,

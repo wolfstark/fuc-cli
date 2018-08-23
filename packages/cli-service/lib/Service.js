@@ -175,7 +175,7 @@ module.exports = class Service {
       './config/prod',
       './config/app',
       './config/babel',
-      // './config/typescript',
+      './config/typescript',
       './config/eslint',
     ].map(idToPlugin);
 
