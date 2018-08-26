@@ -1,25 +1,29 @@
 module.exports = (api, options) => {
   api.chainWebpack((webpackConfig) => {
     const isLegacyBundle = process.env.VUE_CLI_MODERN_MODE && !process.env.VUE_CLI_MODERN_BUILD;
+    const isProduction = process.env.NODE_ENV === 'production';
     const resolveLocal = require('../util/resolveLocal');
     const getAssetPath = require('../util/getAssetPath');
     const inlineLimit = 4096;
 
-    const genAssetSubPath = dir => getAssetPath(
-      options,
-      `${dir}/[name]${options.filenameHashing ? '.[hash:8]' : ''}.[ext]`,
-    );
+    const genAssetSubPath = dir => getAssetPath(options, dir);
+    const genFileName = () => `[name]${options.filenameHashing ? '.[hash:8]' : ''}.[ext]`;
 
-    const genUrlLoaderOptions = dir => ({
-      limit: inlineLimit,
-      // url-loader>=1.1.0 fallback使用object
-      fallback: {
-        loader: 'file-loader',
-        options: {
-          name: genAssetSubPath(dir),
+    const genUrlLoaderOptions = (dir, cdnPath) => {
+      const useCdn = cdnPath && isProduction;
+      return {
+        limit: inlineLimit,
+        // url-loader>=1.1.0 fallback使用object
+        fallback: {
+          loader: 'file-loader',
+          options: {
+            publicPath: useCdn ? cdnPath + options.baseUrl : null,
+            outputPath: genAssetSubPath(dir),
+            name: genFileName(),
+          },
         },
-      },
-    });
+      };
+    };
 
     webpackConfig
       .mode('development')
@@ -96,7 +100,7 @@ module.exports = (api, options) => {
       .test(/\.(png|jpe?g|gif|webp)(\?.*)?$/)
       .use('url-loader')
       .loader('url-loader')
-      .options(genUrlLoaderOptions('img'));
+      .options(genUrlLoaderOptions('img', options.imgUrl));
 
     // do not base64-inline SVGs.
     // https://github.com/facebookincubator/create-react-app/pull/1180
@@ -106,7 +110,8 @@ module.exports = (api, options) => {
       .use('file-loader')
       .loader('file-loader')
       .options({
-        name: genAssetSubPath('img'),
+        outputPath: genAssetSubPath('img'),
+        name: genFileName(),
       });
 
     webpackConfig.module
