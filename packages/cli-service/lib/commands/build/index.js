@@ -61,17 +61,17 @@ async function build(args, api, options) {
   const isLegacyBuild = args.target === 'app' && args.modern && !args.modernBuild;
 
   // resolve raw webpack config
-  let webpackConfig;
-  if (args.target === 'lib') {
-    webpackConfig = require('./resolveLibConfig')(api, args, options);
-  } else if (
-    args.target === 'wc' ||
-    args.target === 'wc-async'
-  ) {
-    webpackConfig = require('./resolveWcConfig')(api, args, options);
-  } else {
-    webpackConfig = require('./resolveAppConfig')(api, args, options);
-  }
+  // let webpackConfig;
+  // if (args.target === 'lib') {
+  //   webpackConfig = require('./resolveLibConfig')(api, args, options);
+  // } else if (
+  //   args.target === 'wc' ||
+  //   args.target === 'wc-async'
+  // ) {
+  //   webpackConfig = require('./resolveWcConfig')(api, args, options);
+  // } else {
+  const webpackConfig = require('./resolveAppConfig')(api, args, options);
+  // }
 
   // check for common config errors
   validateWebpackConfig(webpackConfig, api, options, args.target);

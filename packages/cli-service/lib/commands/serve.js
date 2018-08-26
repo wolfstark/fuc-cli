@@ -41,15 +41,6 @@ function checkInContainer() {
   return null;
 }
 
-function getPublicUrl(rawPublicUrl, protocol) {
-  if (rawPublicUrl) {
-    if (/^[a-zA-Z]+:\/\//.test(rawPublicUrl)) {
-      return rawPublicUrl;
-    }
-    return `${protocol}://${rawPublicUrl}`;
-  }
-  return null;
-}
 /**
  *
  * @param {PluginAPI} api
@@ -122,8 +113,14 @@ module.exports = (api, options) => {
       projectDevServerOptions.port || defaults.port;
     const port = await portfinder.getPortPromise();
     const rawPublicUrl = args.public || projectDevServerOptions.public;
-    const publicUrl = getPublicUrl(rawPublicUrl, protocol);
-
+    let publicUrl = null;
+    if (rawPublicUrl) {
+      if (/^[a-zA-Z]+:\/\//.test(rawPublicUrl)) {
+        publicUrl = rawPublicUrl;
+      } else {
+        publicUrl = `${protocol}://${rawPublicUrl}`;
+      }
+    }
 
     const urls = prepareURLs(
       protocol,
