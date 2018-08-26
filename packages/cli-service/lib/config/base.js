@@ -9,21 +9,29 @@ module.exports = (api, options) => {
     const genAssetSubPath = dir => getAssetPath(options, dir);
     const genFileName = () => `[name]${options.filenameHashing ? '.[hash:8]' : ''}.[ext]`;
 
-    const genUrlLoaderOptions = (dir, cdnPath) => {
-      const useCdn = cdnPath && isProduction;
-      return {
-        limit: inlineLimit,
-        // url-loader>=1.1.0 fallback使用object
-        fallback: {
-          loader: 'file-loader',
-          options: {
-            publicPath: useCdn ? cdnPath + options.baseUrl : null,
-            outputPath: genAssetSubPath(dir),
-            name: genFileName(),
-          },
+    const genUrlLoaderOptions = dir => ({
+      limit: inlineLimit,
+      // url-loader>=1.1.0 fallback使用object
+      fallback: {
+        loader: 'file-loader',
+        options: {
+          name: require('path').join(genAssetSubPath(dir), genFileName()),
         },
-      };
-    };
+      },
+    });
+    const genCdnUrlLoaderOptions = (dir, cdnPath) => ({
+      limit: inlineLimit,
+      // url-loader>=1.1.0 fallback使用object
+      fallback: {
+        loader: 'file-loader',
+        options: {
+          // 只有使用cdn时才需要将outputPath和name分离，build时的资源定位会忽略outputPath
+          publicPath: isProduction ? cdnPath + options.baseUrl : null,
+          outputPath: genAssetSubPath(dir),
+          name: genFileName(),
+        },
+      },
+    });
 
     webpackConfig
       .mode('development')
@@ -51,8 +59,8 @@ module.exports = (api, options) => {
       .set(
         'vue$',
         options.runtimeCompiler ?
-          'vue/dist/vue.esm.js' :
-          'vue/dist/vue.runtime.esm.js',
+        'vue/dist/vue.esm.js' :
+        'vue/dist/vue.runtime.esm.js',
       );
 
     webpackConfig.resolveLoader
@@ -100,7 +108,7 @@ module.exports = (api, options) => {
       .test(/\.(png|jpe?g|gif|webp)(\?.*)?$/)
       .use('url-loader')
       .loader('url-loader')
-      .options(genUrlLoaderOptions('img', options.imgUrl));
+      .options(genCdnUrlLoaderOptions('img', options.imgUrl));
 
     // do not base64-inline SVGs.
     // https://github.com/facebookincubator/create-react-app/pull/1180
@@ -110,6 +118,7 @@ module.exports = (api, options) => {
       .use('file-loader')
       .loader('file-loader')
       .options({
+        // 所有图片资源都使用cdn,需要通过outputPath忽略本地路径
         outputPath: genAssetSubPath('img'),
         name: genFileName(),
       });
