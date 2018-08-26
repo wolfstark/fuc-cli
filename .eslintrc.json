@@ -8,6 +8,8 @@
     "no-underscore-dangle": "off",
     "global-require": "off",
     "import/no-unresolved": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-param-reassign": "off",
+    "prefer-promise-reject-errors": "off"
   }
 }

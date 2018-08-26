@@ -1,6 +1,7 @@
-['logger', 'pluginResolution', 'validate', 'spinner', 'ipc'].forEach((m) => {
+['logger', 'pluginResolution', 'validate', 'spinner', 'request', 'ipc'].forEach((m) => {
   // eslint-disable-next-line
   Object.assign(exports, require(`./lib/${m}`));
 });
-exports.chalk = require('chalk')
-exports.execa = require('execa')
+exports.chalk = require('chalk');
+exports.execa = require('execa');
+
