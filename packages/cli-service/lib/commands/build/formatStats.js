@@ -7,14 +7,12 @@ module.exports = function formatStats(stats, dir, api) {
     width: 80,
   });
 
-  // 减少冗长信息
   const json = stats.toJson({
     hash: false,
     modules: false,
     chunks: false,
   });
 
-  // 资源信息
   let assets = json.assets ?
     json.assets :
     json.children.reduce((acc, child) => acc.concat(child.assets), []);
@@ -23,13 +21,11 @@ module.exports = function formatStats(stats, dir, api) {
   const isJS = val => /\.js$/.test(val);
   const isCSS = val => /\.css$/.test(val);
   const isMinJS = val => /\.min\.js$/.test(val);
-  // 获取js和css资源
   assets = assets
     .filter((a) => {
       if (seenNames.has(a.name)) {
         return false;
       }
-      // 所有非重复资源都记录一次
       seenNames.set(a.name, true);
       return isJS(a.name) || isCSS(a.name);
     })
@@ -48,7 +44,7 @@ module.exports = function formatStats(stats, dir, api) {
   function getGzippedSize(asset) {
     const filepath = api.resolve(path.join(dir, asset.name));
     const buffer = fs.readFileSync(filepath);
-    return formatSize(zlib.gzipSync(buffer).length); // TODO: 费时
+    return formatSize(zlib.gzipSync(buffer).length);
   }
 
   function makeRow(a, b, c) {
