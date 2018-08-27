@@ -1,14 +1,8 @@
 /*
  * @Author: wangxiang
- * @Date: 2018-04-25 10:45:27
- * @Last Modified by: wangxiang
- * @Last Modified time: 2018-04-28 11:45:25
- */
-/*
- * @Author: wangxiang
  * @Date: 2018-04-25 10:44:25
- * @Last Modified by:   wangxiang
- * @Last Modified time: 2018-04-25 10:44:25
+ * @Last Modified by: wenxi
+ * @Last Modified time: 2018-08-27 14:08:08
  */
 
 // const _ = require('lodash');
@@ -37,8 +31,7 @@ module.exports = (dirname, options) => {
       log.loading(
         new Promise((resolve, reject) => {
           Shell.exec(
-            `npm install -g ${GenerateTemplate}`,
-            {
+            `npm install -g ${GenerateTemplate}`, {
               async: true,
               silent: true,
             },
