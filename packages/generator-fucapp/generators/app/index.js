@@ -63,6 +63,7 @@ module.exports = class extends Generator {
       process.chdir(Path.join(process.cwd(), this.options.appname));
     }
     this.yarnInstall().then(() => {
+      shell.exec('yarn lint');
       shell.exec('git init');
       shell.exec('git add .');
       shell.exec('git commit -m "init"', {
@@ -86,20 +87,16 @@ module.exports = class extends Generator {
       opts,
     );
     this.fs.copyTpl(
-      this.templatePath('.babelrc'),
-      this.destinationPath(Path.join(DestFolder, '.babelrc')),
+      this.templatePath('.browserslistrc'),
+      this.destinationPath(Path.join(DestFolder, '.browserslistrc')),
     );
     this.fs.copyTpl(
-      this.templatePath('.eslintrc'),
-      this.destinationPath(Path.join(DestFolder, '.eslintrc')),
+      this.templatePath('.eslintrc.js'),
+      this.destinationPath(Path.join(DestFolder, '.eslintrc.js')),
     );
     this.fs.copyTpl(
       this.templatePath('.gitignore'),
       this.destinationPath(Path.join(DestFolder, '.gitignore')),
-    );
-    this.fs.copyTpl(
-      this.templatePath('.postcssrc'),
-      this.destinationPath(Path.join(DestFolder, '.postcssrc')),
     );
   }
 };
