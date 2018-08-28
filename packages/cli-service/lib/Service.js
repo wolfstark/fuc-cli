@@ -20,7 +20,7 @@ const {
 } = require('./options');
 /**
  * @example
- *foo/fun -> /foo/fun/
+ * foo/fun -> /foo/fun/
  *
  * @param {any} config
  * @param {any} key
