@@ -99,7 +99,7 @@ module.exports = class Service {
     const mode = args.mode || (name === 'build' && args.watch ? 'development' : this.modes[name]);
 
     // 加载Env变量，加载用户配置，应用插件
-    this.init(mode);
+    this.init(mode, args);
 
     args._ = args._ || []; // eslint-disable-line no-param-reassign
     let command = this.commands[name];
@@ -124,7 +124,7 @@ module.exports = class Service {
     return fn(args, rawArgv);
   }
 
-  init(mode = process.env.VUE_CLI_MODE) {
+  init(mode = process.env.VUE_CLI_MODE, args) {
     if (this.initialized) {
       return;
     }
@@ -133,10 +133,10 @@ module.exports = class Service {
 
     // load mode .env
     if (mode) {
-      this.loadEnv(mode);
+      this.loadEnv(mode, args);
     }
     // load base .env
-    this.loadEnv();
+    this.loadEnv(undefined, args);
 
     // 读取 fuc.config.js 并 合并默认配置
     const userOptions = this.loadUserOptions();
@@ -260,9 +260,9 @@ module.exports = class Service {
     return {};
   }
 
-  loadEnv(mode) {
+  loadEnv(mode, { env }) {
     const logger = debug('vue:env');
-    const basePath = path.resolve(this.context, `.env${mode ? `.${mode}` : ''}`);
+    const basePath = path.resolve(this.context, `.env${env ? `.${env}` : ''}`);
     const localPath = `${basePath}.local`;
 
     const load = (filePath) => {
@@ -277,8 +277,8 @@ module.exports = class Service {
       }
     };
 
-    load(localPath);
-    load(basePath);
+    load(`${localPath}.yml`);
+    load(`${basePath}.yml`);
 
     if (mode) {
       // by default, NODE_ENV and BABEL_ENV are set to "development" unless mode

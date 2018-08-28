@@ -172,6 +172,7 @@ module.exports = (api, options) => {
     usage: 'vue-cli-service build [options] [entry|pattern]',
     options: {
       '--mode': 'specify env mode (default: production)',
+      '--env': 'env file (default: dev)',
       '--dest': `specify output directory (default: ${options.outputDir})`,
       '--modern': 'build app targeting modern browsers with auto fallback',
       '--target': `app | lib | wc | wc-async (default: ${defaults.target})`,
