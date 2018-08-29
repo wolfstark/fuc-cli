@@ -158,7 +158,7 @@ module.exports = (api, options) => {
         require.resolve(projectDevServerOptions.hotOnly ?
           'webpack/hot/only-dev-server' :
           'webpack/hot/dev-server'),
-        // TODO custom overlay client
+        // TODO: custom overlay client
         // `@vue/cli-overlay/dist/client`
       ];
       if (process.env.APPVEYOR) {
@@ -217,12 +217,10 @@ module.exports = (api, options) => {
       });
     });
 
-
     return new Promise((resolve, reject) => {
       // log instructions & open browser on first compilation complete
       let isFirstCompile = true;
-      compiler.hooks.done.tap('fuc-cli-service serve', (stats) => {
-        console.log(stats);
+      compiler.hooks.done.tap('vue-cli-service serve', (stats) => {
         if (stats.hasErrors()) {
           return;
         }
