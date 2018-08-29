@@ -49,7 +49,7 @@ function checkInContainer() {
 module.exports = (api, options) => {
   api.registerCommand('serve', {
     description: 'start development server',
-    usage: 'fuc-cli-service serve [options] [entry]',
+    usage: '@fuc/cli-service serve [options] [entry]',
     options: {
       '--open': 'open browser on server start',
       '--copy': 'copy url to clipboard on server start',

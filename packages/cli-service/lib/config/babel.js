@@ -1,6 +1,6 @@
 module.exports = (api, options) => {
   const useThreads = process.env.NODE_ENV === 'production' && options.parallel;
-  const cliServicePath = require('path').dirname(require.resolve('fuc-cli-service'));
+  const cliServicePath = require('path').dirname(require.resolve('@fuc/cli-service'));
 
   api.chainWebpack((webpackConfig) => {
     const jsRule = webpackConfig.module

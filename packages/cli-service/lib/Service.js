@@ -87,7 +87,7 @@ module.exports = class Service {
   }
 
   /**
-   * @example fuc-cli-service serve --open
+   * @example @fuc/cli-service serve --open
    * command:'serve',
    * args:{_:['serve'],open:true}
    * rawArgv:['serve','--open']
