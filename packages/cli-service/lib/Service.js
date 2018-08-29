@@ -12,7 +12,7 @@ const {
   error,
   warn,
   isPlugin,
-} = require('fuc-cli-utils');
+} = require('@fuc/cli-utils');
 
 const {
   defaults,

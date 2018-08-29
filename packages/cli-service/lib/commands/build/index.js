@@ -30,7 +30,7 @@ async function build(args, api, options) {
     info,
     logWithSpinner,
     stopSpinner,
-  } = require('fuc-cli-utils');
+  } = require('@fuc/cli-utils');
 
   log();
   const {
@@ -214,7 +214,7 @@ module.exports = (api, options) => {
       if (args.modern) {
         const {
           warn,
-        } = require('fuc-cli-utils');
+        } = require('@fuc/cli-utils');
         warn('Modern mode only works with default target (app). ' +
           'For libraries or web components, use the browserslist ' +
           'config to specify target browsers.');

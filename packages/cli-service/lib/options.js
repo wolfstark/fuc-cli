@@ -1,7 +1,7 @@
 const {
   createSchema,
   validate,
-} = require('fuc-cli-utils');
+} = require('@fuc/cli-utils');
 
 const schema = createSchema(joi => joi.object({
   baseUrl: joi.string().allow(''),

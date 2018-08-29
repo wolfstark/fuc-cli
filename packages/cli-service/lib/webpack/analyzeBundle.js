@@ -6,7 +6,7 @@ const walk = require('acorn/dist/walk');
 const mapValues = require('lodash.mapvalues');
 const transform = require('lodash.transform');
 const zlib = require('zlib');
-const { warn } = require('fuc-cli-utils');
+const { warn } = require('@fuc/cli-utils');
 /* eslint-disable */
 exports.analyzeBundle = function analyzeBundle(bundleStats, assetSources) {
   // Picking only `*.js` assets from bundle that has non-empty `chunks` array

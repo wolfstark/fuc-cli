@@ -178,7 +178,7 @@ module.exports = (api, options) => {
     const defaultHtmlPath = path.resolve(__dirname, 'index-default.html');
     const publicCopyIgnore = ['index.html', '.DS_Store'];
 
-    console.log(multiPageConfig);
+    // console.log(multiPageConfig);
     // wran:当前总是多页
     if (!multiPageConfig) {
       // default, single page setup.

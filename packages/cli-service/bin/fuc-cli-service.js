@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const semver = require('semver');
-const { error } = require('fuc-cli-utils');
+const { error } = require('@fuc/cli-utils');
 const requiredVersion = require('../package.json').engines.node;
 
 if (!semver.satisfies(process.version, requiredVersion)) {

@@ -11,7 +11,7 @@ module.exports = (api) => {
       '--verbose': 'show full function definitions in output',
     },
   }, (args) => {
-    const { get } = require('fuc-cli-utils');
+    const { get } = require('@fuc/cli-utils');
     const { toString } = require('webpack-chain');
     const config = api.resolveWebpackConfig();
     const { _: paths, verbose } = args;

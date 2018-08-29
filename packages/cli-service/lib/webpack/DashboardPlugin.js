@@ -7,7 +7,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const webpack = require('webpack');
-const { IpcMessenger } = require('fuc-cli-utils');
+const { IpcMessenger } = require('@fuc/cli-utils');
 const { analyzeBundle } = require('./analyzeBundle');
 
 const ID = 'vue-cli-dashboard-plugin';

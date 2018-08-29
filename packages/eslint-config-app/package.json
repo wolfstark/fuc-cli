@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-app",
+  "name": "@fuc/eslint-config-app",
   "version": "3.0.1",
   "description": "eslint-config-airbnb for vue-cli",
   "main": "index.js",

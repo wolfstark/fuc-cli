@@ -44,7 +44,7 @@ module.exports = function lint(args = {}, api) {
     done,
     exit,
     chalk,
-  } = require('fuc-cli-utils');
+  } = require('@fuc/cli-utils');
 
   const files = args._ && args._.length ? args._ : ['src', 'tests', '*.js', '.*.js'];
   const extensions = require('./eslintOptions').extensions(api);

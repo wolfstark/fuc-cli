@@ -1,6 +1,6 @@
 const path = require('path');
 const hash = require('hash-sum');
-const { matchesPluginId } = require('fuc-cli-utils');
+const { matchesPluginId } = require('@fuc/cli-utils');
 /* eslint-disable no-param-reassign,no-restricted-syntax */
 // Note: if a plugin-registered command needs to run in a specific default mode,
 // the plugin needs to expose it via `module.exports.defaultModes` in the form

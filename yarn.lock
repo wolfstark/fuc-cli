@@ -711,6 +711,27 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@fuc/cli-utils@file:packages/cli-utils":
+  version "1.0.0"
+  dependencies:
+    chalk "^2.3.0"
+    cmd-shim "^2.0.2"
+    execa "^0.9.0"
+    joi "^12.0.0"
+    node-ipc "^9.1.1"
+    opn "^5.2.0"
+    ora "^1.3.0"
+    request-promise-native "^1.0.5"
+    string.prototype.padstart "^3.0.0"
+
+"@fuc/eslint-config-app@file:packages/eslint-config-app":
+  version "3.0.1"
+  dependencies:
+    eslint-config-airbnb-base "^12.1.0"
+    eslint-import-resolver-webpack "^0.9.0"
+    eslint-plugin-import "^2.11.0"
+    eslint-plugin-vue "^4.7.1"
+
 "@intervolga/optimize-cssnano-plugin@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@intervolga/optimize-cssnano-plugin/-/optimize-cssnano-plugin-1.0.6.tgz#be7c7846128b88f6a9b1d1261a0ad06eb5c0fdf8"
@@ -3060,14 +3081,6 @@ eslint-config-airbnb-base@^12.1.0:
   dependencies:
     eslint-restricted-globals "^0.1.1"
 
-"eslint-config-app@file:packages/eslint-config-app":
-  version "3.0.1"
-  dependencies:
-    eslint-config-airbnb-base "^12.1.0"
-    eslint-import-resolver-webpack "^0.9.0"
-    eslint-plugin-import "^2.11.0"
-    eslint-plugin-vue "^4.7.1"
-
 eslint-import-resolver-node@^0.3.1:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.2.tgz#58f15fb839b8d0576ca980413476aab2472db66a"
@@ -3751,19 +3764,6 @@ fsevents@^1.2.2, fsevents@^1.2.3:
   dependencies:
     nan "^2.9.2"
     node-pre-gyp "^0.10.0"
-
-"fuc-cli-utils@file:packages/cli-utils":
-  version "1.0.0"
-  dependencies:
-    chalk "^2.3.0"
-    cmd-shim "^2.0.2"
-    execa "^0.9.0"
-    joi "^12.0.0"
-    node-ipc "^9.1.1"
-    opn "^5.2.0"
-    ora "^1.3.0"
-    request-promise-native "^1.0.5"
-    string.prototype.padstart "^3.0.0"
 
 function-bind@^1.0.2, function-bind@^1.1.0, function-bind@^1.1.1:
   version "1.1.1"

@@ -1,5 +1,5 @@
 {
-  "name": "fuc-cli",
+  "name": "@fuc/cli",
   "version": "1.0.0",
   "description": "Frontend development toolchains for graceful workflow",
   "scripts": {

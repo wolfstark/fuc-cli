@@ -3,7 +3,7 @@ const {
   hasProjectYarn,
   openBrowser,
   IpcMessenger,
-} = require('fuc-cli-utils');
+} = require('@fuc/cli-utils');
 
 /* eslint-disable no-param-reassign */
 const defaults = {
@@ -222,6 +222,7 @@ module.exports = (api, options) => {
       // log instructions & open browser on first compilation complete
       let isFirstCompile = true;
       compiler.hooks.done.tap('fuc-cli-service serve', (stats) => {
+        console.log(stats);
         if (stats.hasErrors()) {
           return;
         }

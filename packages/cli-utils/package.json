@@ -1,5 +1,5 @@
 {
-  "name": "fuc-cli-utils",
+  "name": "@fuc/cli-utils",
   "version": "1.0.0",
   "description": "shared utilities for fuc-cli packages",
   "main": "index.js",
