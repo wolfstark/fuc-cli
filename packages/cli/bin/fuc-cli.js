@@ -8,7 +8,7 @@ const program = require('commander');
 const FeatureGenerator = require('../lib/generator');
 const log = require('../lib/log');
 const cleanArgs = require('../lib/cleanArgs');
-// const Service = require('fuc-cli-service');
+// const Service = require('@fuc/cli-service');
 
 FeatureInfo();
 program.version(require('../package').version).usage('<command> [options]');

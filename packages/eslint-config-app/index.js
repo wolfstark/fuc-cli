@@ -5,7 +5,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       webpack: {
-        config: require.resolve('fuc-cli-service/webpack.config.js'),
+        config: require.resolve('@fuc/cli-service/webpack.config.js'),
       },
     },
     'import/extensions': [
