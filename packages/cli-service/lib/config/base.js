@@ -59,8 +59,8 @@ module.exports = (api, options) => {
       .set(
         'vue$',
         options.runtimeCompiler ?
-        'vue/dist/vue.esm.js' :
-        'vue/dist/vue.runtime.esm.js',
+          'vue/dist/vue.esm.js' :
+          'vue/dist/vue.runtime.esm.js',
       );
 
     webpackConfig.resolveLoader
