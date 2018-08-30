@@ -71,7 +71,14 @@ exports.defaults = () => ({
   // 用于使用单独的图片CDN
   imgUrl: null,
 
-  deploy: null,
+  deploy: {
+    /*
+          host: string,
+          user: string,
+          password: number,
+          ftpDomain: string
+        */
+  },
 
   // where to output built files
   outputDir: 'dist',
