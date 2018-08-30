@@ -3,21 +3,27 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 
-
+/* eslint-disable consistent-return */
 function walk(dir, done) {
-  const results = [];
   fs.readdir(dir, (err, list) => {
     if (err) return done(err);
 
-    let pending = list.length;
-
-    if (!pending) return done(null, results);
-
     list.forEach((file) => {
       file = path.resolve(dir, file);
-      results.push(file);
-      pending -= 1;
-      if (!pending) done(null, results);
+
+      fs.stat(file, (eror, stats) => {
+        if (eror) return done(err);
+
+        const isFile = stats.isFile();// 是文件
+        const isDir = stats.isDirectory();// 是文件夹
+
+        if (isFile) {
+          return done(file);
+        }
+        if (isDir) {
+          walk(file);// 递归，如果是文件夹，就继续遍历该文件夹下面的文件
+        }
+      });
     });
   });
 }
@@ -32,10 +38,12 @@ function walk(dir, done) {
  *
  * @param {import("../../PluginAPI")} api
  * @param {{baseUrl:string,deployConfig:DeployConfig}} options
+ * @param {string} outputDir
  */
 module.exports = function deploy(api, {
   baseUrl,
-  deployConfig,
+  deploy: deployConfig,
+  outputDir,
 }) {
   const client = new Client();
 
@@ -46,17 +54,17 @@ module.exports = function deploy(api, {
     //     client.end();
     // });
 
-    const tpath = path.resolve(api.resolve('.'), 'dist');
-    walk(tpath, (err, results) => {
+    const targetDir = api.resolve(outputDir);
+    walk(targetDir, (err, localPath) => {
       if (err) throw err;
-      results.forEach((filename) => {
-        const spath = baseUrl + path.basename(filename);
-        client.put(filename, spath, (_err) => {
-          if (_err) throw _err;
-          console.dir(`上传文件: ${chalk.cyan(deployConfig.ftpDomain + spath)}`);
-          client.end();
-        });
+      // results.forEach((localPath) => {
+      const remotePath = baseUrl + path.basename(localPath);
+      client.put(localPath, remotePath, (_err) => {
+        if (_err) throw _err;
+        console.dir(`上传文件:  ${chalk.cyan(deployConfig.ftpDomain + remotePath)}`);
+        client.end();
       });
+      // });
     });
   });
 
