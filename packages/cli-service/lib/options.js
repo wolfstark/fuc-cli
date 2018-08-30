@@ -5,9 +5,10 @@ const {
 
 const schema = createSchema(joi => joi.object({
   baseUrl: joi.string().allow(''),
+  imgUrl: joi.string(),
+  deploy: joi.object(),
   outputDir: joi.string(),
   assetsDir: joi.string(),
-  imgUrl: joi.string(),
   indexPath: joi.string(),
   filenameHashing: joi.boolean(),
   runtimeCompiler: joi.boolean(),
@@ -67,14 +68,17 @@ exports.defaults = () => ({
   // project deployment base
   baseUrl: '/',
 
+  // 用于使用单独的图片CDN
+  imgUrl: null,
+
+  deploy: null,
+
   // where to output built files
   outputDir: 'dist',
 
   // where to put static assets (js/css/img/font/...)
   assetsDir: '',
 
-  // 用于使用单独的图片CDN
-  imgUrl: null,
 
   // filename for index.html (relative to outputDir)
   indexPath: 'index.html',

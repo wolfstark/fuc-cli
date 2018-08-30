@@ -181,6 +181,7 @@ module.exports = (api, options) => {
       '--report': 'generate report.html to help analyze bundle content',
       '--report-json': 'generate report.json to help analyze bundle content',
       '--watch': 'watch for changes',
+      '--deploy': 'deploy for dist',
     },
   }, async (args) => {
     Object.keys(defaults).forEach((key) => {
@@ -222,6 +223,9 @@ module.exports = (api, options) => {
       await build(args, api, options);
     }
     delete process.env.VUE_CLI_BUILD_TARGET;
+    if (args.deploy) {
+      require('./deploy')(api, options);
+    }
   });
 };
 
