@@ -8,7 +8,7 @@
       "request": "launch",
       "name": "serve",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
-      "args": ["serve", "--open", "--env", "dev"],
+      "args": ["serve", "--open", "--env", "dev", "--deploy"],
       "cwd": "/Users/daywatch/project/app2"
     },
     {
@@ -16,7 +16,8 @@
       "request": "launch",
       "name": "build",
       "program": "${workspaceFolder}/packages/cli-service/bin/fuc-cli-service.js",
-      "args": ["build"]
+      "args": ["build", "--env", "prod", "--deploy"],
+      "cwd": "/Users/daywatch/project/app2"
     },
     {
       "type": "node",
