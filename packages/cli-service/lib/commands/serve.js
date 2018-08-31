@@ -44,7 +44,7 @@ function checkInContainer() {
 /**
  *
  * @param {PluginAPI} api
- * @param {object} options fuc.config.js
+ * @param {object} options project.config.js
  */
 module.exports = (api, options) => {
   api.registerCommand('serve', {

@@ -138,7 +138,7 @@ module.exports = class Service {
     // load base .env
     this.loadEnv(undefined, args);
 
-    // 读取 fuc.config.js 并 合并默认配置
+    // 读取 project.config.js 并 合并默认配置
     const userOptions = this.loadUserOptions();
     this.projectOptions = defaultsDeep(userOptions, defaults());
 
@@ -201,29 +201,29 @@ module.exports = class Service {
   }
 
   loadUserOptions() {
-    // fuc.config.js
+    // project.config.js
     let fileConfig;
     let resolved;
     let resovledFrom;
-    const configPath = path.resolve(this.context, 'fuc.config.js');
+    const configPath = path.resolve(this.context, 'project.config.js');
 
     if (fs.existsSync(configPath)) {
       try {
         // eslint-disable-next-line
         fileConfig = require(configPath);
         if (!fileConfig || typeof fileConfig !== 'object') {
-          error(`Error loading ${chalk.bold('fuc.config.js')}: should export an object.`);
+          error(`Error loading ${chalk.bold('project.config.js')}: should export an object.`);
           fileConfig = null;
         }
       } catch (e) {
-        error(`Error loading ${chalk.bold('fuc.config.js')}:`);
+        error(`Error loading ${chalk.bold('project.config.js')}:`);
         throw e;
       }
     }
 
     if (fileConfig) {
       resolved = fileConfig;
-      resovledFrom = 'fuc.config.js';
+      resovledFrom = 'project.config.js';
     } else {
       resolved = {};
       resovledFrom = 'inline options';
@@ -285,6 +285,9 @@ module.exports = class Service {
       // is production or test. However this can be overwritten in .env files.
       process.env.BABEL_ENV = mode === 'production' || mode === 'test' ? mode : 'development';
       process.env.NODE_ENV = process.env.BABEL_ENV;
+    }
+    if (env) {
+      process.env.DEPLOY_ENV = env;
     }
   }
 
