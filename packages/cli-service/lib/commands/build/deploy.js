@@ -2,6 +2,13 @@ const Client = require('ftp');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
+const {
+  log,
+  done,
+  info,
+  logWithSpinner,
+  stopSpinner,
+} = require('@fuc/cli-utils');
 
 /* eslint-disable consistent-return */
 function walk(dir, done) {
@@ -18,10 +25,10 @@ function walk(dir, done) {
         const isDir = stats.isDirectory();// 是文件夹
 
         if (isFile) {
-          return done(file);
+          return done(null, file);
         }
         if (isDir) {
-          walk(file);// 递归，如果是文件夹，就继续遍历该文件夹下面的文件
+          walk(file, done);// 递归，如果是文件夹，就继续遍历该文件夹下面的文件
         }
       });
     });
@@ -37,15 +44,11 @@ function walk(dir, done) {
 /**
  *
  * @param {import("../../PluginAPI")} api
- * @param {{baseUrl:string,deployConfig:DeployConfig}} options
- * @param {string} outputDir
+ * @param {{baseUrl:string,deploy:DeployConfig,outputDir:string}} options
  */
-module.exports = function deploy(api, {
-  baseUrl,
-  deploy: deployConfig,
-  outputDir,
-}) {
+module.exports = function deploy(api, options) {
   const client = new Client();
+  const { deploy: deployConfig } = options;
 
   client.on('ready', () => {
     // client.list(function (err, list) {
@@ -53,18 +56,16 @@ module.exports = function deploy(api, {
     //     console.dir(list);
     //     client.end();
     // });
-
-    const targetDir = api.resolve(outputDir);
-    walk(targetDir, (err, localPath) => {
+    const outputDir = api.resolve(options.outputDir);
+    walk(outputDir, (err, localPath) => {
       if (err) throw err;
-      // results.forEach((localPath) => {
-      const remotePath = baseUrl + path.basename(localPath);
+
+      const remotePath = path.join(options.baseUrl, path.relative(outputDir, localPath));
       client.put(localPath, remotePath, (_err) => {
         if (_err) throw _err;
-        console.dir(`上传文件:  ${chalk.cyan(deployConfig.ftpDomain + remotePath)}`);
+        console.log(`上传文件: ${chalk.cyan(deployConfig.ftpDomain + remotePath)}`);
         client.end();
       });
-      // });
     });
   });
 
