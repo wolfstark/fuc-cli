@@ -3,10 +3,12 @@ const {
   validate,
 } = require('@fuc/cli-utils');
 
+
 const schema = createSchema(joi => joi.object({
   baseUrl: joi.string().allow(''),
   imgUrl: joi.string(),
   deploy: joi.object(),
+  multiplePages: joi.boolean(),
   outputDir: joi.string(),
   assetsDir: joi.string(),
   indexPath: joi.string(),
@@ -76,10 +78,12 @@ exports.defaults = () => ({
           host: string,
           user: string,
           password: number,
-          ftpDomain: string
+          ftpDomain: string,
+          accessKey:string,
+          secretKey:string
         */
   },
-
+  multiplePages: true,
   // where to output built files
   outputDir: 'dist',
 

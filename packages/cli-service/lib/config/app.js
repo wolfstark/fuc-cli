@@ -180,7 +180,7 @@ module.exports = (api, options) => {
 
     // console.log(multiPageConfig);
     // wran:当前总是多页
-    if (!multiPageConfig) {
+    if (!options.multiplePages) {
       // default, single page setup.
       htmlOptions.template = fs.existsSync(htmlPath) ?
         htmlPath :
