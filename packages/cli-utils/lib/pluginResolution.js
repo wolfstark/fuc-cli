@@ -1,4 +1,4 @@
-const pluginRE = /(^(@fuc\/|fuc-|@[\w-]+\/fuc-)cli-plugin-)|(^built-in:config\/)/;
+const pluginRE = /(^(@vue\/|vue-|@[\w-]+\/vue-)cli-plugin-)|(^built-in:config\/)/;
 const scopeRE = /^@[\w-]+\//;
 
 exports.isPlugin = id => pluginRE.test(id);
