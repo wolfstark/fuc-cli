@@ -3,13 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const qiniu = require('qiniu');
-// const {
-//   log,
-//   done,
-//   info,
-//   logWithSpinner,
-//   stopSpinner,
-// } = require('@fuc/cli-utils');
+const {
+  done,
+} = require('@fuc/cli-utils');
 
 
 /**
@@ -74,7 +70,9 @@ module.exports = function deploy(api, options) {
       const remotePath = path.join(options.baseUrl, path.relative(outputDir, localPath));
       client.put(localPath, remotePath, (_err) => {
         if (_err) throw _err;
-        console.log(`上传文件: ${chalk.cyan(deployConfig.ftpDomain + remotePath)}`);
+        if (remotePath.endsWith('.html')) {
+          done(`部署完成: ${chalk.cyan(deployConfig.ftpDomain + remotePath)}`);
+        }
         client.end();
       });
     });
@@ -87,9 +85,10 @@ module.exports = function deploy(api, options) {
     password: deployConfig.password,
   });
 
+  const accessKey = 'zWHToHUzjBG6azWpQ-8ne6Y487ovItQcAQE0mMSx';
+  const secretKey = 'OZ4hf7TQT_Cfq6mcZIC4HWGQO1wUwalY-xJd6NNk';
+
   const {
-    accessKey,
-    secretKey,
     bucket,
   } = deployConfig;
   const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
@@ -121,8 +120,7 @@ module.exports = function deploy(api, options) {
           throw respErr;
         }
         if (respInfo.statusCode === 200) {
-          console.log(respBody);
-          console.log(`上传文件: ${chalk.cyan(`https://img2.ultimavip.cn/${respBody.key}`)}`);
+          // console.log(`上传文件: ${chalk.cyan(`https://img2.ultimavip.cn/${respBody.key}`)}`);
         } else {
           console.log(respInfo.statusCode);
           console.log(respBody);

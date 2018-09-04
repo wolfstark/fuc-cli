@@ -6,7 +6,6 @@ const {
 
 const schema = createSchema(joi => joi.object({
   baseUrl: joi.string().allow(''),
-  imgUrl: joi.string(),
   deploy: joi.object(),
   multiplePages: joi.boolean(),
   outputDir: joi.string(),
@@ -69,9 +68,6 @@ function hasMultipleCores() {
 exports.defaults = () => ({
   // project deployment base
   baseUrl: '/',
-
-  // 用于使用单独的图片CDN
-  imgUrl: null,
 
   deploy: {
     /*

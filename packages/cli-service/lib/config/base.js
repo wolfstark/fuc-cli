@@ -108,7 +108,7 @@ module.exports = (api, options) => {
       .test(/\.(png|jpe?g|gif|webp)(\?.*)?$/)
       .use('url-loader')
       .loader('url-loader')
-      .options(genCdnUrlLoaderOptions('img', options.imgUrl));
+      .options(genCdnUrlLoaderOptions('img', options.deploy.imgDomain));
 
     // do not base64-inline SVGs.
     // https://github.com/facebookincubator/create-react-app/pull/1180
