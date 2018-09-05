@@ -184,6 +184,8 @@ module.exports = (api, options) => {
       '--deploy': 'deploy for dist',
     },
   }, async (args) => {
+    // 默认值
+    args.modern = true;
     Object.keys(defaults).forEach((key) => {
       if (args[key] == null) {
         args[key] = defaults[key];

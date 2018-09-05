@@ -1,10 +1,10 @@
-/**
- * 读取路径信息
- * @param {string} path 路径
- */
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * 读取路径信息
+ * @param {string} _path 路径
+ */
 function getStat(_path) {
   try {
     return fs.statSync(_path);

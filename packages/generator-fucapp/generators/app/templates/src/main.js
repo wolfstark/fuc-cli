@@ -1,9 +1,14 @@
 import Vue from 'vue';
-import App from './App.vue';
+import 'normalize.css'
+import 'babel-polyfill'
 import './registerServiceWorker';
+import * as filters from './assets/scripts/filters'; // global filters
+
+document.documentElement.style.fontSize = `${document.documentElement.clientWidth / 7.5}px`;
 
 Vue.config.productionTip = false;
 
-new Vue({
-  render: h => h(App),
-}).$mount('#app');
+// 注册过滤器
+Object.keys(filters).forEach((key) => {
+  Vue.filter(key, filters[key]);
+});

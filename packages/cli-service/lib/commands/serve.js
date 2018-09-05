@@ -44,7 +44,7 @@ function checkInContainer() {
 /**
  *
  * @param {PluginAPI} api
- * @param {object} options project.config.js
+ * @param {object} options vue.config.js
  */
 module.exports = (api, options) => {
   api.registerCommand('serve', {

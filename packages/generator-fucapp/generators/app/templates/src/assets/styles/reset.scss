@@ -1,0 +1,44 @@
+@import './var.scss';
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', STHeiti, 'Microsoft Yahei', Tahoma,
+    Simsun, sans-serif;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  color: $text-color;
+}
+
+button {
+  outline: none;
+  border: none;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+img {
+  -webkit-touch-callout: none;
+  border: 0;
+}
+a {
+  text-decoration: none;
+}
+input {
+  user-select: element !important;
+}
