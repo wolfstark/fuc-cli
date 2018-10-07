@@ -8,18 +8,18 @@
     "lint": "fuc-cli-service lint"
   },
   "dependencies": {
-    "register-service-worker": "^1.5.2",
-    "vue": "^2.5.17",
-    "normalize.css": "^8.0.0",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
-    "qs": "^6.5.2"
+    "normalize.css": "^8.0.0",
+    "qs": "^6.5.2",
+    "register-service-worker": "^1.5.2",
+    "vue": "^2.5.17"
   },
   "devDependencies": {
+    "@fuc/cli-service": "file:../fuc-cli/packages/cli-service",
     "lint-staged": "^7.2.2",
     "node-sass": "^4.9.0",
-    "sass-loader": "^7.0.1",
-    "@fuc/cli-service": "file:../fuc-cli/packages/cli-service"
+    "sass-loader": "^7.0.1"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

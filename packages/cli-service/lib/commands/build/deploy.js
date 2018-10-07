@@ -30,9 +30,9 @@ module.exports = function deploy(api, options) {
   } = options;
 
   /* eslint-disable consistent-return */
-  function walk(dir, done) {
+  function walk(dir, doneFn) {
     fs.readdir(dir, (err, list) => {
-      if (err) return done(err);
+      if (err) return doneFn(err);
 
       list.forEach((file) => {
         // img图片不部署，使用七牛云单独存储
@@ -41,16 +41,16 @@ module.exports = function deploy(api, options) {
         file = path.resolve(dir, file);
 
         fs.stat(file, (eror, stats) => {
-          if (eror) return done(err);
+          if (eror) return doneFn(err);
 
           const isFile = stats.isFile(); // 是文件
           const isDir = stats.isDirectory(); // 是文件夹
 
           if (isFile) {
-            return done(null, file);
+            return doneFn(null, file);
           }
           if (isDir) {
-            walk(file, done); // 递归，如果是文件夹，就继续遍历该文件夹下面的文件
+            walk(file, doneFn); // 递归，如果是文件夹，就继续遍历该文件夹下面的文件
           }
         });
       });

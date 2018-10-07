@@ -1,0 +1,35 @@
+@import "./mixins/hairline.scss";
+
+[class*='v-1px'] {
+    position: relative;
+
+    &::after {
+        @include hairline;
+    }
+}
+
+.v-1px {
+    &--top::after {
+        border-top-width: 1px;
+    }
+
+    &--left::after {
+        border-left-width: 1px;
+    }
+
+    &--right::after {
+        border-right-width: 1px;
+    }
+
+    &--bottom::after {
+        border-bottom-width: 1px;
+    }
+
+    &--top-bottom::after {
+        border-width: 1px 0;
+    }
+
+    &--all::after {
+        border-width: 1px;
+    }
+}
