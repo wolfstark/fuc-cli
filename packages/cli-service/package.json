@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "@babel/core": "^7.0.0-rc.2",
-    "@fuc/cli-utils": "file:../cli-utils",
-    "@fuc/eslint-config-app": "file:../eslint-config-app",
+    "@fuc/cli-utils": "^1.0.0",
+    "@fuc/eslint-config-app": "^1.0.0",
     "@intervolga/optimize-cssnano-plugin": "^1.0.6",
     "@vue/babel-preset-app": "^3.0.1",
     "@vue/component-compiler-utils": "^2.2.0",

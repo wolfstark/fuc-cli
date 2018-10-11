@@ -1,7 +1,6 @@
 {
   "name": "<%= appname %>",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "serve": "fuc-cli-service serve",
     "build": "fuc-cli-service build",
@@ -16,7 +15,7 @@
     "vue": "^2.5.17"
   },
   "devDependencies": {
-    "@fuc/cli-service": "file:../fuc-cli/packages/cli-service",
+    "@fuc/cli-service": "^1.0.0",
     "lint-staged": "^7.2.2",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1"
