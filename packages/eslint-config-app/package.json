@@ -1,6 +1,6 @@
 {
   "name": "@fuc/eslint-config-app",
-  "version": "3.0.1",
+  "version": "1.0.1",
   "description": "eslint-config-airbnb for vue-cli",
   "main": "index.js",
   "publishConfig": {

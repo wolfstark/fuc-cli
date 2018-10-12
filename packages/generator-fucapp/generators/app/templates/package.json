@@ -1,9 +1,9 @@
 {
   "name": "<%= appname %>",
-  "version": "0.1.0",
   "scripts": {
-    "serve": "fuc-cli-service serve",
-    "build": "fuc-cli-service build",
+    "serve": "fuc-cli-service serve --env dev --open",
+    "build:prod": "fuc-cli-service build --env prod --deploy",
+    "build:test": "fuc-cli-service build --env test",
     "lint": "fuc-cli-service lint"
   },
   "dependencies": {

@@ -95,8 +95,20 @@ module.exports = class extends Generator {
       this.destinationPath(Path.join(DestFolder, '.eslintrc.js')),
     );
     this.fs.copyTpl(
-      this.templatePath('.gitignore'),
+      this.templatePath('.gitignore.tpl'),
       this.destinationPath(Path.join(DestFolder, '.gitignore')),
+    );
+    this.fs.copyTpl(
+      this.templatePath('.env.dev.yml'),
+      this.destinationPath(Path.join(DestFolder, '.env.dev.yml')),
+    );
+    this.fs.copyTpl(
+      this.templatePath('.env.prod.yml'),
+      this.destinationPath(Path.join(DestFolder, '.env.prod.yml')),
+    );
+    this.fs.copyTpl(
+      this.templatePath('.env.test.yml'),
+      this.destinationPath(Path.join(DestFolder, '.env.test.yml')),
     );
   }
 };

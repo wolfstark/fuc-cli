@@ -24,7 +24,7 @@ const yaml = require('js-yaml');
 //   return res;
 // }
 module.exports = function loadEnvConst(path = '.env') {
-  const config = yaml.safeLoad(fs.readFileSync(path, 'utf-8'));
+  const config = yaml.safeLoad(fs.readFileSync(path, 'utf-8')) || {};
 
   Object.keys(config).forEach((key) => {
     if (typeof process.env[key] === 'undefined') {

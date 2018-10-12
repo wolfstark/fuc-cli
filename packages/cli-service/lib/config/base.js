@@ -111,7 +111,7 @@ module.exports = (api, options) => {
         .rule('images')
         .test(/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/)
         .exclude
-        .add(api.resolve('src/assets/svg-icons'))
+        .add(api.resolve('src/assets/svg-icons')).end()
         .use('url-loader')
         .loader('url-loader')
         .options(genCdnUrlLoaderOptions('img', options.deploy.imgDomain));
@@ -122,7 +122,7 @@ module.exports = (api, options) => {
         .rule('svg')
         .test(/\.(svg)(\?.*)?$/)
         .include
-        .add(api.resolve('src/assets/svg-icons'))
+        .add(api.resolve('src/assets/svg-icons')).end()
         .use('svg-sprite-loader')
         .loader('svg-sprite-loader')
         .options({

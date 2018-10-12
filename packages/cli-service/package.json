@@ -1,9 +1,12 @@
 {
   "name": "@fuc/cli-service",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "lib/Service.js",
   "bin": {
     "fuc-cli-service": "bin/fuc-cli-service.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "description": "local service for fuc-cli projects",
   "author": "walfstark<1038999405@qq.com>",

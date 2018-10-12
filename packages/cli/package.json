@@ -1,6 +1,6 @@
 {
-  "name": "fuc-cli",
-  "version": "1.0.0",
+  "name": "@fuc/cli",
+  "version": "1.0.2",
   "description": "Frontend development toolchains for graceful workflow",
   "publishConfig": {
     "access": "public"
@@ -31,12 +31,17 @@
     "node": ">=8"
   },
   "files": [
-    "bin"
+    "*"
   ],
   "author": "wolfstark <1038999405@qq.com> (https://github.com/wolfstark)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/wolfstark/fuc-cli/issues"
   },
-  "homepage": "https://fuc-cli.github.io/"
+  "homepage": "https://fuc-cli.github.io/",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {}
 }
