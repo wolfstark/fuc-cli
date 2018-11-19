@@ -111,7 +111,7 @@ module.exports = (api, options) => {
         .rule('images')
         .test(/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/)
         .exclude
-        .add(api.resolve('src/assets/svg-icons')).end()
+        .add(api.resolve('src/assets/svg-icons/icons')).end()
         .use('url-loader')
         .loader('url-loader')
         .options(genCdnUrlLoaderOptions('img', options.deploy.imgDomain));
@@ -122,10 +122,11 @@ module.exports = (api, options) => {
         .rule('svg')
         .test(/\.(svg)(\?.*)?$/)
         .include
-        .add(api.resolve('src/assets/svg-icons')).end()
+        .add(api.resolve('src/assets/svg-icons/icons')).end()
         .use('svg-sprite-loader')
         .loader('svg-sprite-loader')
         .options({
+          symbolId: 'icon-[name]',
           // 所有图片资源都使用cdn,需要通过outputPath忽略本地路径
           // outputPath: genAssetSubPath('img'),
           // name: genFileName(),

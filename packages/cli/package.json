@@ -1,6 +1,6 @@
 {
   "name": "@fuc/cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Frontend development toolchains for graceful workflow",
   "publishConfig": {
     "access": "public"
@@ -12,6 +12,7 @@
     "fuc": "bin/fuc-cli.js"
   },
   "dependencies": {
+    "generator-fucapp": "^1.0.3",
     "chalk": "^2.4.1",
     "commander": "^2.9.0",
     "lodash": "^4.17.5",

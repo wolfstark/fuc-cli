@@ -5,4 +5,4 @@ import App from '@/App.vue'
 
 new Vue({
   render: h => h(App, [h(Page)]),
-}).$mount('#app');
+}).$mount('#root');

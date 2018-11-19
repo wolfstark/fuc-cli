@@ -6,6 +6,7 @@
     "build:test": "fuc-cli-service build --env test",
     "lint": "fuc-cli-service lint"
   },
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
