@@ -1,6 +1,6 @@
 {
   "name": "@fuc/cli-service",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "main": "lib/Service.js",
   "bin": {
     "fuc-cli-service": "bin/fuc-cli-service.js"

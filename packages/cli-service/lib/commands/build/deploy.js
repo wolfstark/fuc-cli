@@ -85,8 +85,8 @@ module.exports = function deploy(api, options) {
     password: deployConfig.password,
   });
 
-  const accessKey = 'zWHToHUzjBG6azWpQ-8ne6Y487ovItQcAQE0mMSx';
-  const secretKey = 'OZ4hf7TQT_Cfq6mcZIC4HWGQO1wUwalY-xJd6NNk';
+  const accessKey = 'IxmVzoqgFkFvSQLqAaGkhNh_yrAmZQ1d6cMSMPL3';
+  const secretKey = 'KYjmRDbWP_Zk967MgHvOkWP63pmgWO662ABCTi4v';
 
   const {
     bucket,
