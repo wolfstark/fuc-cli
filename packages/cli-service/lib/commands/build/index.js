@@ -185,7 +185,7 @@ module.exports = (api, options) => {
     },
   }, async (args) => {
     // 默认值
-    args.modern = true;
+    // args.modern = true;
     Object.keys(defaults).forEach((key) => {
       if (args[key] == null) {
         args[key] = defaults[key];
