@@ -4,5 +4,7 @@ import Page from '@/{{{routePath}}}';
 import App from '@/App.vue'
 
 new Vue({
-  render: h => h(App, [h(Page)]),
+  render: function render(h){
+    return h(App, [h(Page)]);
+  },
 }).$mount('#root');

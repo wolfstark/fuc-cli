@@ -142,24 +142,18 @@ module.exports = (api, options) => {
       });
 
       // keep chunk ids stable so async chunks have consistent hash (#1916)
-      const seen = new Set();
-      const nameLength = 4;
+      // const seen = new Set();
+      // const nameLength = 4;
       webpackConfig
         .plugin('named-chunks')
         .use(require('webpack/lib/NamedChunksPlugin'), [(chunk) => {
           if (chunk.name) {
             return chunk.name;
           }
-          const modules = Array.from(chunk.modulesIterable);
-          if (modules.length > 1) {
-            const hash = require('hash-sum');
-            const joinedHash = hash(modules.map(m => m.id).join('_'));
-            let len = nameLength;
-            while (seen.has(joinedHash.substr(0, len))) len += 1;
-            seen.add(joinedHash.substr(0, len));
-            return `chunk-${joinedHash.substr(0, len)}`;
-          }
-          return modules[0].id;
+
+          const hash = require('hash-sum');
+          const joinedHash = hash(Array.from(chunk.modulesIterable, m => m.id).join('_'));
+          return `chunk-${joinedHash}`;
         }]);
     }
     /* 获取多页配置 */
