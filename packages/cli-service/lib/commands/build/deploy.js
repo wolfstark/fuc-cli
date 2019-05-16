@@ -3,10 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const qiniu = require('qiniu');
-const {
-  done,
-} = require('@fuc/cli-utils');
-
+const { done } = require('@fuc/cli-utils');
 
 /**
  * @typedef DeployConfig
@@ -25,9 +22,7 @@ const {
  */
 module.exports = function deploy(api, options) {
   const client = new Client();
-  const {
-    deploy: deployConfig,
-  } = options;
+  const { deploy: deployConfig } = options;
 
   /* eslint-disable consistent-return */
   function walk(dir, doneFn) {
@@ -36,7 +31,7 @@ module.exports = function deploy(api, options) {
 
       list.forEach((file) => {
         // img图片不部署，使用七牛云单独存储
-        if (path.basename(dir) === options.outputDir && file === 'img') return;
+        if (path.basename(dir) === options.outputDir) return;
 
         file = path.resolve(dir, file);
 
@@ -78,54 +73,9 @@ module.exports = function deploy(api, options) {
     });
   });
 
-
   client.connect({
     host: deployConfig.host,
     user: deployConfig.user,
     password: deployConfig.password,
-  });
-
-  const accessKey = 'IxmVzoqgFkFvSQLqAaGkhNh_yrAmZQ1d6cMSMPL3';
-  const secretKey = 'KYjmRDbWP_Zk967MgHvOkWP63pmgWO662ABCTi4v';
-
-  const {
-    bucket,
-  } = deployConfig;
-  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
-
-  const qiniuOptions = {
-    scope: bucket,
-  };
-
-  const putPolicy = new qiniu.rs.PutPolicy(qiniuOptions);
-  const uploadToken = putPolicy.uploadToken(mac);
-  const config = new qiniu.conf.Config();
-  // 空间对应的机房
-  config.zone = qiniu.zone.Zone_z0;
-
-  const formUploader = new qiniu.form_up.FormUploader(config);
-  const putExtra = new qiniu.form_up.PutExtra();
-  // 文件上传
-
-  walk(path.join(options.outputDir, 'img'), (err, localPath) => {
-    if (err) throw err;
-
-    formUploader.putFile(
-      uploadToken, path.join(options.baseUrl, path.basename(localPath)).slice(1),
-      localPath, putExtra, (
-        respErr,
-        respBody, respInfo,
-      ) => {
-        if (respErr) {
-          throw respErr;
-        }
-        if (respInfo.statusCode === 200) {
-          // console.log(`上传文件: ${chalk.cyan(`https://img2.ultimavip.cn/${respBody.key}`)}`);
-        } else {
-          console.log(respInfo.statusCode);
-          console.log(respBody);
-        }
-      },
-    );
   });
 };

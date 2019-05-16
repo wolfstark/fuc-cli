@@ -23,14 +23,14 @@ module.exports = (api, options) => {
           },
         },
       });
-      const genCdnUrlLoaderOptions = (dir, cdnPath) => ({
+      const genCdnUrlLoaderOptions = dir => ({
         limit: inlineLimit,
         // url-loader>=1.1.0 fallback使用object
         fallback: {
           loader: 'file-loader',
           options: {
             // 只有使用cdn时才需要将outputPath和name分离，build时的资源定位会忽略outputPath
-            publicPath: isProduction ? cdnPath + options.baseUrl : null,
+            // publicPath: isProduction ? cdnPath + options.baseUrl : null,
             outputPath: genAssetSubPath(dir),
             name: genFileName(),
           },
@@ -114,7 +114,7 @@ module.exports = (api, options) => {
         .add(api.resolve('src/assets/svg-icons/icons')).end()
         .use('url-loader')
         .loader('url-loader')
-        .options(genCdnUrlLoaderOptions('img', options.deploy.imgDomain));
+        .options(genCdnUrlLoaderOptions('img'));
 
       // do not base64-inline SVGs.
       // https://github.com/facebookincubator/create-react-app/pull/1180
