@@ -3,13 +3,13 @@ module.exports = {
 
   deploy: process.env.DEPLOY_ENV === 'prod' ? {
     host: 'v0.ftp.upyun.com',
-    user: 'ultimavipweb/static-ultimavip',
-    password: 'anve101310112',
-    ftpDomain: 'https://static.ultimavip.cn',
+    user: 'xxx/xxx',
+    password: 'xxx',
+    ftpDomain: 'https://wenxi.tech',
   } : {
     host: 'v0.ftp.upyun.com',
-    user: 'xiaobai/testultimavipweb',
-    password: 'xiaobai123',
-    ftpDomain: 'http://testweb.ultimavip.cn',
+    user: 'xxx/xxx',
+    password: 'xxx',
+    ftpDomain: 'https://wenxi.tech',
   },
 };
