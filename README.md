@@ -40,7 +40,7 @@ yarn build:prod // build & automatic deploy
 
 - 自动打包部署到资源服务器
 - 约定式路由 - 基于文件结构自动生成路由配置
-- 开箱即用，零Webpack配置吗，可扩展
+- 开箱即用，零Webpack配置，可扩展
 
 ## Author
 
