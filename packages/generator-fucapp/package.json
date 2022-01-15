@@ -34,7 +34,7 @@
     "chalk": "^2.1.0",
     "gulp-jsbeautifier": "^2.1.2",
     "lodash": "^4.17.10",
-    "shelljs": "^0.8.1",
+    "shelljs": "^0.8.5",
     "yeoman-generator": "^2.0.5",
     "yosay": "^2.0.2"
   },
