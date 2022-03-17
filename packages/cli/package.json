@@ -15,7 +15,7 @@
     "generator-fucapp": "^1.0.3",
     "chalk": "^2.4.1",
     "commander": "^2.9.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.21",
     "ora": "^2.0.0",
     "shelljs": "^0.8.1",
     "yeoman-environment": "^2.0.6"
